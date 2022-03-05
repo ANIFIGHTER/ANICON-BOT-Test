@@ -1,4 +1,4 @@
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder as SlashCommandBuilder } from '@discordjs/builders';
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -35,7 +35,7 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
 
 let seriesname
 const ping = {
-	data: new SlashCommandBuilder.SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName('area')
         .setDescription('Travel to an area')
         .addStringOption(option => option.setName('area_id').setDescription('Input ID of area').setRequired(true)),

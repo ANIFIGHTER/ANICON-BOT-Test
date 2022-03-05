@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import { All_Cards as cards, randomcard} from '/ASHWIN/JavaScript/disc_cards.js';
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
@@ -34,7 +34,7 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
   });
 let stars = ['',':star:',':star::star:',':star::star::star:',':star::star::star::star:',':star::star::star::star::star:']
 function number() { return Math.floor(Math.random() * (100 - 1+1)) + 1}
-const ping = {data : new SlashCommandBuilder.SlashCommandBuilder()
+const ping = {data : new SlashCommandBuilder()
     .setName('banners')
     .setDescription('View the shop'),
     async execute(interaction){
@@ -106,12 +106,12 @@ const ping = {data : new SlashCommandBuilder.SlashCommandBuilder()
                 .setStyle('PRIMARY')
             );
             let bannerinfo = new discord.MessageEmbed()
-            bannerinfo.setAuthor(interaction.user.tag,interaction.user.avatarURL())
+            bannerinfo.setAuthor({name:`${interaction.user.tag}`, iconURL:`${interaction.user.avatarURL()}`})
             bannerinfo.setColor('GREEN')
             bannerinfo.setTimestamp()
             bannerinfo.setTitle('***__BANNER INFO__***')
             bannerinfo.setDescription(`All cards in the game are available in this banner`)
-        
+            bannerinfo.setFooter({text:'Support the bot, contact [    ]#3780'})
             await interaction.reply({content:'Select the banner',components: [bannerlist]})
 
     let idofinteraction
@@ -137,7 +137,7 @@ const ping = {data : new SlashCommandBuilder.SlashCommandBuilder()
                         await dbQuery(`Update useritems set gold = ${currencycheck[0].gold-1000} where user_id = ${user_id}`)
                     cardspulled[5] = new discord.MessageEmbed()
                     cardspulled[5].setTitle(`***YOUR SUMMONS***`)
-                    cardspulled[5].setAuthor(i.user.tag,i.user.avatarURL())
+                    cardspulled[5].setAuthor({name:`${i.user.tag}`,iconURL:`${i.user.avatarURL()}`})
                     cardspulled[5].setColor('GREEN')
                     cardspulled[5].setDescription('You Summoned following cards')
                     cardspulled[5].setTimestamp()
@@ -162,13 +162,13 @@ if (usercardsidlist.includes(cardsummon.uniqueID)){
                         let wed = `Update gamedata set limitbreak = ${usercards[jk].limitbreak+1} where card_id = ${usercards[jk].card_id} and card_owner = ${user_id} `
                         await dbQuery(wed)
                     updated = 'yes'}}}
-                    if (updated == undefined){let cardsinsert =  `INSERT INTO gamedata (card_unique_id, card_rarity, card_lvl,limitbreak, card_element, card_owner) VALUES('${cardsummon.uniqueID}', '${rarity}','20',0, '${cardsummon.element}' , ${user_id})`;
+                    if (updated == undefined){let cardsinsert =  `INSERT INTO gamedata (card_unique_id, card_rarity, card_lvl,limitbreak, card_owner) VALUES('${cardsummon.uniqueID}', '${rarity}','20',0, ${user_id})`;
                     await dbQuery(cardsinsert)
                     usercards = await dbQuery(usercardsquery)
                 usercardsidlist.push(cardsummon.uniqueID)}
                     cardspulled[x] = new discord.MessageEmbed()        
                     cardspulled[x].setTitle(`***${cardsummon.character}*** (Card ${x+1} of 5)`)
-                    cardspulled[x].setAuthor(i.user.tag,i.user.avatarURL())
+                    cardspulled[x].setAuthor({name:`${i.user.tag}`,iconURL: `${i.user.avatarURL()}`})
                     if (updated == 'yes'){
                     cardspulled[x].setDescription(`Skin name maybe\n${stars[rarity]}\n **LIMIT BREAK**`)}
                     else{cardspulled[x].setDescription(`Skin name maybe\n${stars[rarity]}\n **NEW SUMMON!**`)}

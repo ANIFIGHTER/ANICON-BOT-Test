@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -36,7 +36,7 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
 let listofloc = ['Forest','Mountains','City','Firelands','Wandering Sea','Skytopia']
   
 const ping = {
-	data: new SlashCommandBuilder.SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName('location')
         .setDescription('Travel to a location'),      
         async execute(interaction){

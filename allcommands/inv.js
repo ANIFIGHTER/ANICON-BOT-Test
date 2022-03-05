@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import mysql from 'mysql2';
 import { All_Cards as cards} from '/ASHWIN/JavaScript/disc_cards.js';
 import dotenv from 'dotenv';
@@ -29,10 +29,12 @@ if (err) {
 
 function card_name(a) {
     for (let nbv = 0;nbv<=cards.length;nbv++){if (cards[nbv].uniqueID == a){return cards[nbv].character}}}
+function card_element(a) {
+        for (let nbv = 0;nbv<=cards.length;nbv++){if (cards[nbv].uniqueID == a){return cards[nbv].element}}}
 
 let stars = ['',':star:',':star::star:',':star::star::star:',':star::star::star::star:',':star::star::star::star::star:']
 const ping = {
-	data: new SlashCommandBuilder.SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName('inventory')
 		.setDescription('View your Cards'),
     async execute(interaction){
@@ -70,7 +72,7 @@ const ping = {
                 let j = 0;
                 for (let i = 1; i <= noofpages; i++){
                     totalinvembeds[i] = new discord.MessageEmbed();
-                    totalinvembeds[i].setAuthor(interaction.user.tag, interaction.user.avatarURL());
+                    totalinvembeds[i].setAuthor({name:`${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`});
                     totalinvembeds[i].setTitle('**INVENTORY**');
                     totalinvembeds[i].setColor('AQUA');
                     totalinvembeds[i].setDescription('')
@@ -78,13 +80,13 @@ const ping = {
                     totalinvembeds[i].setTimestamp()
                     totalinvembeds[i].setFooter(`${i} of ${noofpages}`)
                     for (;j < 10*i; j++) {
-                        totalinvembeds[i].addField(`${j+1} | **${card_name(data[j].card_unique_id)}** | ${stars[data[j].card_rarity]} | ${data[j].card_element}`, `LEVEL: ${data[j].card_lvl} |ID: ${data[j].card_id} | LIMIT BREAK: ${data[j].limitbreak}`);   
+                        totalinvembeds[i].addField(`${j+1} | **${card_name(data[j].card_unique_id)}** | ${stars[data[j].card_rarity]} | ${card_element(data[j].card_unique_id)}`, `LEVEL: ${data[j].card_lvl} |ID: ${data[j].card_id} | LIMIT BREAK: ${data[j].limitbreak}`);   
                 }}
                 }else if (data.length%10 !== 0){noofpages = Math.floor(data.length/10)+1
                     let j = 0;
                     for (let i = 1; i <= noofpages; i++){
                         totalinvembeds[i] = new discord.MessageEmbed();
-                        totalinvembeds[i].setAuthor(interaction.user.tag, interaction.user.avatarURL());
+                        totalinvembeds[i].setAuthor({name:`${interaction.user.tag}`, iconURL:`${interaction.user.avatarURL()}`});
                         totalinvembeds[i].setThumbnail('https://artfiles.alphacoders.com/114/114357.jpg')
                         totalinvembeds[i].setTitle('**INVENTORY**');
                         totalinvembeds[i].setColor('AQUA');
@@ -93,7 +95,7 @@ const ping = {
                         totalinvembeds[i].setFooter(`${i} of ${noofpages}`)
                         for (; j < 10*i; j++) {
                             if (j === data.length){break;}
-                            else {totalinvembeds[i].addField(`${j+1} | **${card_name(data[j].card_unique_id)}** | ${stars[data[j].card_rarity]} | ${data[j].card_element}`,  `LEVEL: ${data[j].card_lvl} | ID: ${data[j].card_id} | LIMIT BREAK: ${data[j].limitbreak}`);}
+                            else {totalinvembeds[i].addField(`${j+1} | **${card_name(data[j].card_unique_id)}** | ${stars[data[j].card_rarity]} | ${card_element(data[j].card_unique_id)}`,  `LEVEL: ${data[j].card_lvl} | ID: ${data[j].card_id} | LIMIT BREAK: ${data[j].limitbreak}`);}
                     }}
                 }let pageno = 1;
                 if (totalinvembeds.length===2){

@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import { All_Cards as cards, randomcard} from '/ASHWIN/JavaScript/disc_cards.js';
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
@@ -33,7 +33,7 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
     })
   });
 
-  const ping = {data : new SlashCommandBuilder.SlashCommandBuilder()
+  const ping = {data : new SlashCommandBuilder()
     .setName('refine')
     .setDescription('Refine your Card')
     .addStringOption(option => option.setName('card_id').setDescription('Input ID').setRequired(true))
@@ -81,7 +81,7 @@ let card_class
 for (let j = 0;j<=cards.length-1;j++){if(card.card_unique_id == cards[j].uniqueID){card_class = cards[j]}}
 
 const levelembed = new discord.MessageEmbed();
-levelembed.setAuthor(interaction.user.tag, interaction.user.avatarURL())
+levelembed.setAuthor({name:`${interaction.user.tag}`, iconURL:`${interaction.user.avatarURL()}`})
 levelembed.setColor('BLUE')
 levelembed.setTimestamp()
 levelembed.setTitle('**__REFINING__**')
@@ -89,7 +89,7 @@ levelembed.setThumbnail(`${card_class.artlink}`)
 levelembed.setDescription(`You are refining the following card:\n\n **CARD NAME :** ${card_class.character}
 \nYou are using following resources:\n**SOULS :** ${energy_stone} ${type_energystone} souls
 **Total xp gained =** ${stone_xp}`)
-levelembed.setFooter('Support the bot, contact [    ]#3780')
+levelembed.setFooter({text:'Support the bot, contact [    ]#3780'})
 let confirm = new discord.MessageActionRow()
         .addComponents(
             new discord.MessageButton()

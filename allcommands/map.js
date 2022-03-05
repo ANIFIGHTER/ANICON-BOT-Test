@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import {enemy} from '/ASHWIN/JavaScript/disc_cards.js'
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
@@ -37,14 +37,15 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
 let locname = ['Necropsis','Forest','Mountains','City','Firelands','Wandering Sea','Skytopia']
 
 function areaname(a,enemy){
-  for (let g = 0;g<enemy.length-1;g++){
+  if(a==0){return 0}else{
+  for (let g = 0;g<enemy.length;g++){
     if (enemy[g].uniqueID==a){return enemy[g].series}
-  }
+  }}
 }
 function noname(a){if (a==undefined){return 0}else{return a}}
 
 const ping = {
-	data: new SlashCommandBuilder.SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName('map')
 		.setDescription('Replies with your current location'),
 		async execute(interaction) {
@@ -53,19 +54,26 @@ let user_id = interaction.user.id;
             if (sql.length===0) {await interaction.reply('Not Registered. Register using /start')}
         else{
           let userstagedata = await dbQuery(`Select * from userdata where user_id = ${user_id}`)
+          let nextstagedata = await dbQuery(`Select * from stages where leveluniqueid = ${userstagedata[0].leveluniqueid+1}`)
           let enemydata = await dbQuery(`Select * from stages where leveluniqueid = ${userstagedata[0].leveluniqueid}`)
           let max = await dbQuery(`Select * from stages where leveluniqueid = ${userstagedata[0].max_stage}`)
+      
+          if (nextstagedata.length==0){nextstagedata=max}
+          if (enemydata.length==0){enemydata=[{enemy_unique_id:0}]}
+          if(max.length == 0){max=[{location:0,enemy_unique_id:0,area:0}]}
           
           let cur = new discord.MessageEmbed()
-            cur.setAuthor(interaction.user.tag, interaction.user.avatarURL())
+            cur.setAuthor({name:`${interaction.user.tag}`, iconURL:`${interaction.user.avatarURL()}`})
             cur.setTitle(`**__MAP__**`)
             cur.setColor('GREEN')
             cur.setDescription(`**Current coordinates:**\nLocation: ${locname[noname(userstagedata[0].location)]}
-            Area: ${noname(areaname(enemydata[0].enemy_unique_id,enemy))}\nStage: ${noname(userstagedata[0].stage)}\n
-            **Max Level:**\nLocation: ${locname[noname(max[0].location)]}\nArea: ${noname(areaname(max[0].enemy_unique_id,enemy))}
+            Area: ${areaname(enemydata[0].enemy_unique_id,enemy)}\nStage: ${noname(userstagedata[0].stage)}\n
+            **Next Stage: **\nLocation: ${locname[nextstagedata[0].location]}\nArea: ${areaname(nextstagedata[0].enemy_unique_id,enemy)} (ID:${nextstagedata[0].area})
+            Stage: ${noname(nextstagedata[0].stage)}\n
+            **Max Level:**\nLocation: ${locname[max[0].location]}\nArea: ${areaname(max[0].enemy_unique_id,enemy)} (ID:${max[0].area})
             Stage: ${noname(max[0].stage)}`)
             cur.setTimestamp()
-            cur.setFooter('Support the bot, contact [    ]#3780')
+            cur.setFooter({text:'Support the bot, contact [    ]#3780'})
           
             let loclist = new discord.MessageActionRow()
             .addComponents(
@@ -103,11 +111,10 @@ let user_id = interaction.user.id;
                 areaobject[`${areadata[x].area}`]=areadata[x].enemy_unique_id}
 
                 for (let y = 0;y<=Object.getOwnPropertyNames(areaobject)-1;y++){
-                  console.log('tybsdfanhyrdtsfd')
                 no_ofstages = await dbQuery(`Select * from stages where location= ${i.values[0]} and area = ${Object.getOwnPropertyNames(areaobject)[y]}`)
                 no_ofstages.forEach(element => {no_ofacstages.add(element.leveluniqueid)});
                 console.log(no_ofacstages)
-                cur.addFields({name:`${areaname(no_ofstages[0].enemy_unique_id,enemy)}(${no_ofstages[0].area})`,value:`No. of Stages: ${no_ofacstages.size}`})}
+                cur.addFields({name:`${areaname(no_ofstages[0].enemy_unique_id,enemy)}(ID:${no_ofstages[0].area})`,value:`No. of Stages: ${no_ofacstages.size}`})}
                 await i.update({embeds:[cur],components: [loclist]})}
                     
                 })

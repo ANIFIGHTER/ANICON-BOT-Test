@@ -1,4 +1,4 @@
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import discord from 'discord.js';
 import mysql from 'mysql2';
 import { All_Cards as cards} from '/ASHWIN/JavaScript/disc_cards.js';
@@ -30,7 +30,7 @@ function card_name(a) {
     for (let nbv = 0;nbv<=cards.length;nbv++){if (cards[nbv].uniqueID == a){return cards[nbv]}}}
 let stars = ['',':star:',':star::star:',':star::star::star:',':star::star::star::star:',':star::star::star::star::star:']
 const ping = {
-	data: new SlashCommandBuilder.SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName('teamview')
 		.setDescription('View your team'),
     async execute(interaction){
@@ -62,7 +62,7 @@ const ping = {
                 con.query(cardsinteam,[user_id],async function(err,data){
                     if (data.length==0){await interaction.reply('You haven\'t equipped any card. Use /teamset to equip a card' )}    
                     else{teamembeds[0] = new discord.MessageEmbed();
-                    teamembeds[0].setAuthor(interaction.user.tag, interaction.user.avatarURL())
+                    teamembeds[0].setAuthor({name:`${interaction.user.tag}`,iconURL: `${interaction.user.avatarURL()}`})
                     teamembeds[0].setTitle('TEAM')
                     teamembeds[0].setDescription('Following characters are in your team')
                     teamembeds[0].setColor('BLUE');
@@ -73,14 +73,14 @@ const ping = {
                         teamembeds[0].fields[i]=
                             {name:`${i+1} | ${card.character} | ${data[hawa].card_element}`,value:`${stars[data[hawa].card_rarity]} | ${data[hawa].card_lvl} | ${data[hawa].card_id}`}    
                     teamembeds[i+1] = new discord.MessageEmbed();
-                    teamembeds[i+1].setAuthor(interaction.user.tag, interaction.user.avatarURL());
+                    teamembeds[i+1].setAuthor({name:`${interaction.user.tag}`,iconURL: `${interaction.user.avatarURL()}`});
                     teamembeds[i+1].setTitle(`**${card.character}** (${data[hawa].card_id})\nSERIES:${card.series} `);
                     teamembeds[i+1].setColor('BLUE');
                     teamembeds[i+1].addFields({name:'Card Details',value:`EVOLUTION: ${stars[data[hawa].card_rarity]} \nLIMITBREAK: ${data[hawa].limitbreak}  \nLEVEL: ${data[hawa].card_lvl}  \nELEMENT: ${card.element}  \nSKIN:  \nFAMILARITY:  `},
                     {name: 'CARD STATS', value: `HP: ${card.hp}  \nATTACK: ${card.attack}  \nDEFENSE: ${card.defense}  \nAGILITY: ${card.agility}  `},
                     {name: `SKILL`, value : 'SOME SKILL'})
                     teamembeds[i+1].setTimestamp()
-                    teamembeds[i+1].setFooter('WILL THINK OF SOMETHING')    
+                    teamembeds[i+1].setFooter({text:'WILL THINK OF SOMETHING'})    
                 }}}await interaction.reply({embeds:[teamembeds[0]], components:[navigate]})
                 let pageno = 0
 

@@ -1,10 +1,10 @@
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import discord from 'discord.js';
 import util from 'util'
 
 const wait = util.promisify(setTimeout); 
 const ping = {
-	data: new SlashCommandBuilder.SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName('ping')
 		.setDescription('Replies with Pong!')
 		.addStringOption(option => option.setName('input').setDescription('ping for pong, beep for boop').setRequired(true)),

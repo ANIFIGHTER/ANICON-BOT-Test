@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
 import { All_Cards as cards} from '/ASHWIN/JavaScript/disc_cards.js';
@@ -37,7 +37,7 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
 function card_name(a) {
     for (let nbv = 0;nbv<=cards.length;nbv++){if (cards[nbv].uniqueID == a){return cards[nbv].character}}}
 const ping = {
-	data: new SlashCommandBuilder.SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName('teamset')
 		.setDescription('Puts the card in team')
         .addStringOption(option => option.setName('card_no').setDescription('Input card serial no.').setRequired(true))

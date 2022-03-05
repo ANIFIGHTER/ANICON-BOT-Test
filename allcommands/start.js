@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import { All_Cards as cards,randomcard} from '/ASHWIN/JavaScript/disc_cards.js';
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
@@ -32,7 +32,7 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
     })
   });
 const ping = {
-	data: new SlashCommandBuilder.SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName('start')
 		.setDescription('Register Yourself!'),
     async execute(interaction) {
@@ -43,7 +43,7 @@ const ping = {
                 await interaction.reply('Already Registered');            
             }else if (!err){
                 const randomcarrd = randomcard(cards);
-                let cardgenerate = `INSERT INTO gamedata (card_unique_id, card_rarity, card_lvl, card_element, card_owner) VALUES('${randomcarrd.uniqueID}', '4','20', '${randomcarrd.element}' , ${id})`;
+                let cardgenerate = `INSERT INTO gamedata (card_unique_id, card_rarity, card_lvl, card_owner) VALUES('${randomcarrd.uniqueID}', '4','20', '${randomcarrd.element}' , ${id})`;
                 await dbQuery(cardgenerate)
                 let stage = `INSERT INTO userdata (user_id,location,area,stage,leveluniqueid,max_stage) VALUES(${id},0,0,0,0,0)`;
                 await dbQuery(stage)

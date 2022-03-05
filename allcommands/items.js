@@ -1,6 +1,5 @@
 import discord from 'discord.js';
-import SlashCommandBuilder from '@discordjs/builders';
-import { All_Cards as cards, randomcard} from '/ASHWIN/JavaScript/disc_cards.js';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -33,7 +32,7 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
     })
   });
 
-  const ping = {data : new SlashCommandBuilder.SlashCommandBuilder()
+  const ping = {data : new SlashCommandBuilder()
     .setName('items')
     .setDescription('View items'),
     async execute(interaction){
@@ -55,7 +54,7 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
                     {label:'Souls',value:'souls'}])
                 )
             let allembed = new discord.MessageEmbed()
-            allembed.setAuthor(interaction.user.tag,interaction.user.avatarURL())
+            allembed.setAuthor({name:`${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`})
             allembed.setColor('RED')
             allembed.setTimestamp()
             allembed.setTitle('***__ALL ITEMS__***')
@@ -68,7 +67,7 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
             **Light Souls**: ${items[0].light}\n**Dark Souls**: ${items[0].dark}`})
             allembed.addFields({name:'***__Evolution__***',value:`**Limit Breaker(S)**: ${items[0].limit_break_small}
             **Limit Breaker(M)**: ${items[0].limit_break_medium}\n**Limit Breaker(L)**: ${items[0].limit_break_big}`})
-        
+            allembed.setFooter({text:'Support the bot, contact [    ]#3780'})
         await interaction.reply({content:'***__ITEM INVENTORY__***',components:[itemmenu]})    
 
             let idofitems

@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import { All_Cards as cards, enemy as enemylist} from '/ASHWIN/JavaScript/disc_cards.js';
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
@@ -33,7 +33,7 @@ ser = Array.from(bla)
 let seriesname= ser.sort()
 // console.log(seriesname)
 let no_of_pages
-const ping = {data : new SlashCommandBuilder.SlashCommandBuilder()
+const ping = {data : new SlashCommandBuilder()
     .setName('cards')
     .setDescription('View all the cards'),
     async execute(interaction){
@@ -99,10 +99,11 @@ let idofdex
         if (i.values[0] == menu[a].components[a].options[z].value){
             let characters = new discord.MessageEmbed()
             characters.setTitle(menu[a].components[a].options[z].label)
-            characters.setAuthor(i.user.tag,i.user.avatarURL())
+            characters.setAuthor({name:`${interaction.user.tag}`, iconURL:`${interaction.user.avatarURL()}`})
             characters.setColor('GREEN')
             characters.setTimestamp()
             characters.setDescription('Following characters of this series are available')
+            characters.setFooter({text:'Support the bot, contact [    ]#3780'})
             for (let c = 0;c<=cards.length-1;c++){
                 if (menu[a].components[a].options[z].label == cards[c].series){
             characters.addFields({name:`***${cards[c].character}*** ${cards[c].element}`,value:`HP: ${cards[c].hp} ATK: ${cards[c].attack} DEF: ${cards[c].defense} AGILITY: ${cards[c].agility}`})}}
@@ -115,14 +116,6 @@ let idofdex
             menucollector.stop()
             await i.update({content:'Deleted',embeds:[],components:[]})
         }
-    })
-    menucollector.on('end', collected =>{
-        let cdrem = `update cooldowns set dex = 'NO' WHERE user_id = ${user_id}`
-                    con.query(cdrem, async function(err){if(err){throw err;}})
-    })
-    buttoncollector.on('end', collected =>{
-        let cdrem = `update cooldowns set dex = 'NO' WHERE user_id = ${user_id}`
-                    con.query(cdrem, async function(err){if(err){throw err;}})
     })
 
 }}

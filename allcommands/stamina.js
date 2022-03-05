@@ -1,4 +1,4 @@
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -31,7 +31,7 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
     })
   });
 const ping = {
-	data: new SlashCommandBuilder.SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName('stamina')
 		.setDescription('view the stamina'),
         async execute(interaction) {

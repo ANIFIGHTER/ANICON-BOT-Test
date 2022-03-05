@@ -1,6 +1,6 @@
 import discord from 'discord.js';
 import canvass from 'canvas'
-import SlashCommandBuilder from '@discordjs/builders';
+import {SlashCommandBuilder} from '@discordjs/builders';
 import mysql from 'mysql2';
 import { All_Cards as cards, enemy as enemylist,enemyhp,manabar,manavalue,elements} from '/ASHWIN/JavaScript/disc_cards.js';
 import util from 'util'
@@ -41,7 +41,7 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
 function number() { return Math.floor(Math.random() * (100 - 1+1)) + 1}
 
 const ping = {
-	data: new SlashCommandBuilder.SlashCommandBuilder()
+	data: new SlashCommandBuilder()
 		.setName('battle')
 		.setDescription('Start the Battle !!'),
         async execute(interaction) {
@@ -106,15 +106,16 @@ const ping = {
                         if(enemy[b].uniqueID==enemies[v].enemy_unique_id){
                     enemy[b].hp = Math.floor(2*enemy[b].hp + enemies[v].enemy_lvl*0.02*enemy[b].hp)
                     enemy[b].attack = Math.floor(1.2*enemy[b].attack + enemies[v].enemy_lvl*0.02*enemy[b].attack)
-                    enemy[b].defense = Math.floor(1.5*enemy[b].defense + enemies[v].enemy_lvl*0.02*enemy[b].defense)
+                    enemy[b].defense = Math.floor(1.6*enemy[b].defense + enemies[v].enemy_lvl*0.02*enemy[b].defense)
                     enemy[b].agility = Math.floor(1.5*enemy[b].agility + enemies[v].enemy_lvl*0.02*enemy[b].agility)
                         }}} 
 
-            let manaval = 0
+            let manavaluser = 0
+            let manavalenemy = 0
             const canvas = canvass.createCanvas(1150, 675);
             const context = canvas.getContext('2d')
-            const background = await canvass.loadImage('https://cdn.discordapp.com/attachments/897181776982720563/900386586074693652/gradienta-LeG68PrXA6Y-unsplash_1.jpg')
-            context.drawImage(background, 0, 0, canvas.width, canvas.height)
+            // const background = await canvass.loadImage('https://cdn.discordapp.com/attachments/897181776982720563/900386586074693652/gradienta-LeG68PrXA6Y-unsplash_1.jpg')
+            // context.drawImage(background, 0, 0, canvas.width, canvas.height)
             for (let x = 0;x<=4;x++){
                 if (team.length==x){break;}else{
             const hijk = await canvass.loadImage(team[x].artlink)
@@ -129,6 +130,10 @@ const ping = {
             
             const attachment = new discord.MessageAttachment(canvas.toBuffer());
             attachment.setName('test.png')
+            
+            const mainbar = new discord.MessageActionRow()
+            mainbar
+            
             const userbutton = new discord.MessageActionRow()
             for (let i = 0;i<=team.length-1; i++){
                 userbutton.addComponents(
@@ -155,332 +160,280 @@ const ping = {
                 )
             }
             let p = 1
-            enemybutton.addComponents(
-                new discord.MessageButton()
-                .setCustomId('round')
-                .setLabel(`Round${p}`)
-                .setStyle('SECONDARY')
-                .setDisabled(true)
-            )
 
             const test = new discord.MessageEmbed();
                 test.setTitle(`**__Challenging ${usertabledata[0].location}-${usertabledata[0].area}-${usertabledata[0].stage}__**`)
                 test.setDescription('Select your target')    
-                test.setAuthor(interaction.user.tag,interaction.user.avatarURL())
+                test.setAuthor({name:`${interaction.user.tag}`, iconURL:`${interaction.user.avatarURL()}`})
                 test.setImage('attachment://test.png')
             
             for (let i = 0;i<=team.length-1; i++){
             test.addFields({name:`${team[i].character} ${team[i].element}`, value:`${team[i].hp}/${team[i].hp} ${enemyhp(team[i].hp,team[i].hp)}`})}
-            test.addFields({name : 'mana', value: `mana ${manabar(manaval)}`})
+            test.addFields({name : 'mana', value: `mana ${manabar(manavaluser)}`})
             for (let i = 0;i<=enemy.length-1;i++){
             test.addFields({name:`${enemy[i].character} ${enemy[i].element}`,value:`${enemy[i].hp}/${enemy[i].hp} ${enemyhp(enemy[i].hp,enemy[i].hp)}`})}
-            test.addFields({name : 'mana', value: `mana ${manabar(manaval)}`},{name:'battle details', value: 'details'})    
+            test.addFields({name : 'mana', value: `mana ${manabar(manavalenemy)}`},{name:'battle details', value: 'details'})    
+            test.setTimestamp()
+            test.setFooter({text:'Support the bot, contact [    ]#3780'})
+            await interaction.editReply({embeds:[test], components:[userbutton,enemybutton], files:[attachment]});           
+            let idofbottleinteraction
+            interaction.fetchReply()
+        .then (reply=> idofbottleinteraction = reply.id)
+
+        let cardattacked
+        let cardattackedoghp
+        let cardused=new Array()
+        let cardattack
+        let enemymodhp = new Object()
+        let carddamage
+        let cardattackedID
+        let enemydamage = 0
+        let userattackedcard
+        let userattackedid
+        let enemyattack
+        let usercarddead = []
+        let usermodhp = new Object()
+        let enemydead = [];
+        let livingenemy = []
+        let livingcard = []
+        let crit = [12,32,97,47,37]
+        let evas = [1,5,95,45,27,]
+        
+        for (let c = 0;c<=userbutton.components.length-2;c++){
+            usermodhp[`${userbutton.components[c].customId}`] = team[c].hp}
+
+        for (let c = 0;c<=enemybutton.components.length-1;c++){
+            enemymodhp[`${enemybutton.components[c].customId}`] = enemy[c].hp}    
+
+        const filter = i => i.user.id === interaction.user.id&& idofbottleinteraction===i.message.id;
+        const collector = interaction.channel.createMessageComponentCollector({filter, componentType: 'BUTTON', time: 300000 });
+        collector.on('collect', async i => {
+            let evasion = 1
+            let critical = 1
+            let abilityactivate = false
             
-            //     for (let i = 0;i<=team.length-1; i++){
-            //         if (i%2==0){
-            // test.addFields({name:`${team[i].character} ${team[i].element}\n${team[i].hp}/${team[i].hp}`, value:`.${enemyhp(team[i].hp,team[i].hp)}`,inline :true},
-            // {name: '\u200B', value: '\u200B',inline:true})}
-            // else{test.addField(`${team[i].character} ${team[i].element}\n${team[i].hp}/${team[i].hp}`, `.${enemyhp(team[i].hp,team[i].hp)}`,true)}}
-            //     test.addFields({name : 'mana', value: `mana ${mana}`})
-            //     for (let i = 0;i<=enemy.length-1;i++){
-            //         if (i%2==0){
-            //             test.addFields({name:`${enemy[i].character} ${enemy[i].element}\n${enemy[i].hp}/${enemy[i].hp}`,value:`.${enemyhp(enemy[i].hp,enemy[i].hp)}`,inline:true},
-            //             {name: '\u200B', value: '\u200B',inline:true })}
-            //             else{        
-            //     test.addField(`${enemy[i].character} ${enemy[i].element}\n${enemy[i].hp}/${enemy[i].hp}`,`.${enemyhp(enemy[i].hp,enemy[i].hp)}`,true)}}
-            //     test.addFields({name : 'mana', value: `mana ${mana}`},
-            //         {name:'battle details', value: 'details'})
-                test.setTimestamp()
-                test.setFooter('Support the bot, contact [    ]#3780')
-                await interaction.editReply({embeds:[test], components:[userbutton,enemybutton], files:[attachment]});           
-                let idofbattleinteraction
-    interaction.fetchReply()
-        .then (reply=> idofbattleinteraction = reply.id)
-                let cardattacked
-                let h 
-                let cardattackedoghp
-                let cardused=new Array()
-                let cardattack
-                let enemymodhp = new Object()
-                let carddamage
-                let cardattackedID
-                let enemydamage = 0
-                let userattackedcard
-                let userattackedid
-                let enemyattack
-                let usercarddead = []
-                let usermodhp = new Object()
-                let enemydead = [];
-                let livingenemy = []
-                let crit = [12,32,97,47,37]
-                let evas = [1,5,95,45,27,]
-                let abilityactivate = false
-                for (let c = 0;c<=userbutton.components.length-2;c++){
-                    usermodhp[`${userbutton.components[c].customId}`] = team[c].hp}
-                    console.log(usermodhp)
+            if (['enemy1', 'enemy2', 'enemy3', 'enemy4'].includes(i.customId)) {
+                for (let j = 0; j<=enemybutton.components.length-1;j++){
+                for (let kbc = 0; kbc <= enemy.length-1;kbc++){
+                    if(enemybutton.components[j].customId==i.customId && enemybutton.components[j].label == enemy[kbc].character){
 
-                const filter = i => i.user.id === interaction.user.id&& idofbattleinteraction===i.message.id;
-                const collector = interaction.channel.createMessageComponentCollector({filter, componentType: 'BUTTON', time: 300000 });
-                collector.on('collect', async i => {
-                let critical = 1
-                let evasion = 1
-                if (i.customId == 'round'){
-                    p++
-                    for (let s = 0;s<=enemybutton.components.length-2;s++){
-                        if (enemydead.length==0){livingenemy.push(enemybutton.components[s])}
-                        else{for (let sd = 0;sd<=enemydead.length-1;sd++){
-                            if (enemydead[sd]!=enemybutton.components[s].customId)
-                            {livingenemy.push(enemybutton.components[s])}}}}
-                    let enemyattacktemp = livingenemy[Math.floor(Math.random()*livingenemy.length)]
-                        for(let m = 0;m<=enemy.length-1;m++){
-                            if (enemyattacktemp.label==enemy[m].character){
-                                enemyattack = enemy[m]}}
-                    for (let cv = 0; cv <= userbutton.components.length-2;cv++){
-                        if (usermodhp[`${userbutton.components[cv].customId}`]>0){
-                            userattackedid = userbutton.components[cv].customId
-                            for (let v = 0;v<=userbutton.components.length-2;v++){
-                                if (userattackedid == userbutton.components[v].customId){
-                                    for (let d = 0;d<=team.length-1;d++){
-                                        if (userbutton.components[v].label == team[d].character){userattackedcard = team[d]
-                                            break
-                                        }
-                                }}}break;}}
-                        let yui = number()    
-                        if (evas.includes(yui)){ 
-                    evasion = 0}
-                        if (crit.includes(yui)){
-                            critical = 2}
-                    //DAMAGE FORMULA FOR ENEMIES
-                    enemydamage = ((enemyattack.attack*1.5)-userattackedcard.defense-(enemyattack.agility - userattackedcard.agility))*critical*evasion
-                       console.log(yui,evasion,critical,)     
-                        const elementalDamage = elements(enemyattack.element,userattackedcard.element)
-                        if (elementalDamage==true){enemydamage= enemydamage+Math.floor(enemydamage/4)}
-                        else if (elementalDamage==false){enemydamage= enemydamage-Math.floor(enemydamage/4)}
-                        else if(elementalDamage==1){enemydamage= enemydamage-Math.floor(enemydamage/10)}
-                        else{enemydamage = enemydamage+0}
+                cardattacked= enemy[kbc]
+                cardattackedoghp = enemy[kbc].hp
+                cardattackedID = i.customId                            }}}
 
+                for (let abi =0;abi<=enemybutton.components.length-1;abi++){
+                    enemybutton.components[abi].setDisabled(true)}
+                for (let pi = 0; pi<= userbutton.components.length-1; pi++){
+                    if (cardused.includes(userbutton.components[pi].customId)||usercarddead.includes(userbutton.components[pi].customId))
+                        {userbutton.components[pi].setDisabled(true)}
+                    else {userbutton.components[pi].setDisabled(false)}}
+                        test.setDescription(`**ROUND ${p}**`)
+                        i.fetchReply()
+                .then(reply=> reply.removeAttachments())
+                        await i.update({embeds:[test],components:[userbutton,enemybutton]})}
+            else if(['card1','card2','card3','card4'].includes(i.customId)){
+                for (let j = 0; j<=userbutton.components.length-1;j++){
+                    if (i.customId == userbutton.components[j].customId){
+                        cardused.push(i.customId)
+                        for (let kbc = 0; kbc <= team.length-1;kbc++){
+                            if(userbutton.components[j].label == team[kbc].character && j==kbc)
+                                {cardattack = team[kbc]}}}}
+            
+            for(let f = 0;f<=userbutton.components.length-1;f++){
+                userbutton.components[f].setDisabled(true)}
+            for (let f = 0;f<=enemybutton.components.length-1;f++){
+                enemybutton.components[f].setDisabled(true)}
+            let iuy = number()
+            if (crit.includes(iuy)){ critical = 2}
+            else if (evas.includes(iuy)){evasion = 0}
+            let elementalDamage = elements(cardattack.element,cardattacked.element)
+            if (elementalDamage==undefined){elementalDamage=1}
+            else{elementalDamage= Math.floor(elementalDamage*cardattack.attack)}
+            //DAMAGE FORMULA FOR USERS         
+            carddamage = Math.floor((cardattack.attack-cardattacked.defense)+(cardattack.agility - cardattacked.agility)+elementalDamage)*critical*evasion
+            
+            enemymodhp[`${cardattackedID}`] = enemymodhp[`${cardattackedID}`]-carddamage
+            
+            if (manavaluser >4){
+                manavaluser = manavaluser - 5
+            test.fields[team.length]={name:'Mana',value:`mana ${manabar(manavaluser)}`}
+            test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} activates their ability.`}
+            await i.update({embeds:[test],components:[userbutton,enemybutton]})
+            abilityactivate = true      
+            await wait(3000)}
+            else{
+            manavaluser = manavalue(manavaluser,p,evasion,critical)}
+            //IF ENEMY HP LESS THAN ZERO
+            if (enemymodhp[`${cardattackedID}`] <=0){
+                enemydead.push(cardattackedID)
+                for (let x = 0; x<=enemybutton.components.length-1;x++){
+                    if (cardattackedID === enemybutton.components[x].customId){
+                        test.fields[team.length+1+x]={name:`${cardattacked.character} ${cardattacked.element}`,value :`0/${cardattackedoghp} ${enemyhp(0,cardattackedoghp)}`}}}
+                        test.fields[team.length]={name:'Mana',value:`mana${manabar(manavaluser)}`}
+                        if (enemydead.length != enemybutton.components.length){
+                        if (critical == 2){critical = 1
+                            test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did critical ${carddamage} damage\n${cardattacked.character} is defeated`}}
+                        else{test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did ${carddamage} damage\n${cardattacked.character} is defeated`}}
+                        if (abilityactivate == true){await i.editReply({embeds:[test],components:[]})}
+                                        else{await i.update({embeds:[test],components:[userbutton,enemybutton]})}
+                        }else if (enemydead.length == enemybutton.components.length){
+                            if (critical == 2){ critical = 1
+                                test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did critical ${carddamage} damage\n${cardattacked.character} is defeated\nALL ENEMIES DEAD. YOU WIN!!`}}
+                            else{    
+                            test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did ${carddamage} damage\n${cardattacked.character} is defeated\nALL ENEMIES DEAD. YOU WIN!!`}}
                         
-                            usermodhp[`${userattackedid}`] = (usermodhp[`${userattackedid}`]-enemydamage)
-
-                    if (usermodhp[`${userattackedid}`]<=0){ 
+                            if (usertabledata[0].max_stage<usertabledata[0].leveluniqueid){
+                            await dbQuery(`update userdata set max_stage = ${usertabledata[0].leveluniqueid} where user_id = ${user_id}`)
+                            let useritem = await dbQuery(`Select * from useritems where user_id = ${user_id}`)
+                        await dbQuery(`update useritems set gold = ${useritem[0].gold+50} where user_id = ${user_id}`)}
+                        // else {}
+                            if(staminadataexe[0].user_xp < staminadataexe[0].user_xp_limit){
+                                await dbQuery(`update userstamina set user_xp = ${parseInt(staminadataexe[0].user_xp)+1} where user_id = ${user_id}`)}
+                            
+                                collector.stop()
+                                if (abilityactivate == true){await i.editReply({embeds:[test],components:[]})}
+                                        else{await i.update({embeds:[test],components:[]})}
+                                    return }}
+                            
+                            //IF ENEMY HP MORE THAN ZERO
+                            if(enemymodhp[`${cardattackedID}`]>0){
+                                test.fields[team.length]={name:'Mana',value:`mana ${manabar(manavaluser)}`}
+                                if(critical==2){critical=1
+                                    test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did critical ${carddamage} damage`}}
+                                else if (evasion==0){evasion=1
+                                    test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} but ${cardattacked.character} evaded`}}
+                                else{
+                                    test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did ${carddamage} damage`}}    
+                                for (let x = 0; x<=enemybutton.components.length-1;x++){
+                                    if (cardattackedID === enemybutton.components[x].customId){
+                                    test.fields[team.length+1+x]= {name:`${cardattacked.character} ${cardattacked.element}`,value :`${enemymodhp[`${cardattackedID}`]}/${cardattackedoghp} ${enemyhp(enemymodhp[`${cardattackedID}`],cardattackedoghp)}`}}}
+                                
+                                if (abilityactivate == true){await i.editReply({embeds:[test],components:[userbutton,enemybutton]})
+                                }else{await i.update({embeds:[test],components:[userbutton,enemybutton]})}}    
+                                
+                    //Selecting the enemy
+                    for (let z = 0; z<=enemybutton.components.length-1;z++){
+                        if (!enemydead.includes(enemybutton.components[z].customId)){
+                        livingenemy.push(enemybutton.components[z])}
+                    }
+                    let enemyattacktemp
+                    if (livingenemy.length>1){
+                    enemyattacktemp = livingenemy[Math.floor(Math.random()*livingenemy.length)]}
+                    else {enemyattacktemp=livingenemy[0]}    
+                    for(let m = 0;m<=enemy.length-1;m++){
+                            if (enemyattacktemp.label==enemy[m].character){
+                                enemyattack = enemy[m]
+                            livingenemy=[]}}
+                
+                    //SELECTING USERCARD THAT IS TO BE ATTACKED
+                    for (let z = 0; z<=userbutton.components.length-2;z++){
+                        if (!usercarddead.includes(userbutton.components[z].customId)){
+                        livingcard.push(userbutton.components[z])}
+                    }
+                    
+                    let lk
+                    if (livingcard.length==1){lk=47}            
+                    else{ lk = number()}
+                    //Selecting random usercard
+                    if (lk>50){
+                            let userattackedtemp = livingcard[Math.floor(Math.random()*livingcard.length)]
+                        
+                            for(let m = 0;m<=team.length-1;m++){
+                            if (userattackedtemp.label==team[m].character){
+                                userattackedid = userattackedtemp.customId
+                                userattackedcard = team[m]}}
+                            livingcard=[]}
+                    //Selecting first character of team            
+                    else if(lk<=50){
+                        for (let d = 0;d<=team.length-1;d++){
+                            if (team[d].character == livingcard[0].label){userattackedcard = team[d]
+                                userattackedid = livingcard[0].customId
+                            }}livingcard=[]}
+                
+                    //Damage formula for enemy
+                    let yui = number()    
+                    if (evas.includes(yui)){ 
+                        evasion = 0}
+                    if (crit.includes(yui)){
+                        critical = 2}
+                enemydamage = Math.floor(((enemyattack.attack*1.5)-userattackedcard.defense-(enemyattack.agility - userattackedcard.agility))*critical*evasion)
+                    // const elementalDamage = elements(enemyattack.element,userattackedcard.element)
+                    // if (elementalDamage==true){enemydamage= enemydamage+Math.floor(enemydamage/4)}
+                    // else if (elementalDamage==false){enemydamage= enemydamage-Math.floor(enemydamage/4)}
+                    // else if(elementalDamage==1){enemydamage= enemydamage-Math.floor(enemydamage/10)}
+                    // else{enemydamage = enemydamage+0}
+                usermodhp[`${userattackedid}`] = (usermodhp[`${userattackedid}`]-enemydamage)
+                await wait(3000)
+                
+                if (manavalenemy >4){
+                    manavalenemy = manavalenemy - 5
+                test.fields[team.length+enemybutton.components.length+1]={name:'Mana',value:`mana ${manabar(manavalenemy)}`}
+                test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} activates their ability.`}
+                await i.editReply({embeds:[test],components:[userbutton,enemybutton]})
+                abilityactivate = true
+                await wait(3000)}
+                else{
+                manavalenemy = manavalue(manavalenemy,p,evasion,critical)}
+                test.fields[team.length+enemybutton.components.length+1]={name:'Mana',value:`mana ${manabar(manavalenemy)}`}
+                
+                if (usermodhp[`${userattackedid}`]<=0){ 
                         for (let x = 0; x<=userbutton.components.length-1;x++){
                             if (userattackedid==userbutton.components[x].customId){
                                 usercarddead.push(userattackedid)
                                 test.fields[x]={name:`${userattackedcard.character} ${userattackedcard.element}` ,value :`0/${userattackedcard.hp} ${enemyhp(0,userattackedcard.hp)}`}}}
+                                if (usercarddead.length!=userbutton.components.length-1){
                                 if (critical==2){
                                     test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} and did critical damage ${enemydamage} damage\n${userattackedcard.character} is defeated`}}
                                 else{
                                 test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} and did ${enemydamage} damage\n${userattackedcard.character} is defeated`}}
-                                if (usercarddead.length==userbutton.components.length-1){
+                                await i.editReply({embeds:[test],components:[userbutton,enemybutton]})}
+                                else if (usercarddead.length==userbutton.components.length-1){
                                     if (critical==2){
-                                        test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} and did critical damage ${enemydamage} damage\n${userattackedcard.character} is defeated`}}
+                                        test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} and did critical damage ${enemydamage} damage\n${userattackedcard.character} is defeated\nYOU WERE DEFEATED`}}
                                     else{
-                                       test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} and did ${enemydamage} damage\n${userattackedcard.character} is defeated\n YOU WERE DEFEATED`}}
-                                    collector.stop()
-                                    await i.update({embeds:[test],components:[]})
-                                }else{
-                                for (let asd =0;asd<=enemybutton.components.length-1;asd++){
-                                    if (enemydead.includes(enemybutton.components[asd].customId)){
-                                        enemybutton.components[asd].setDisabled(true)}                        
-                                    else if(enemybutton.components[asd].customId=='round'){
-                                        enemybutton.components[asd].setDisabled(true)
-                                        enemybutton.components[asd].setLabel(`Round ${p}`)}
-                                    else{enemybutton.components[asd].setDisabled(false)}}
-                                    for (let j = 0; j<=userbutton.components.length-1;j++){
-                                        if (userbutton.components[j].customId == 'deleting'){userbutton.components[j].setDisabled(false)}
-                                        else {userbutton.components[j].setDisabled(true)}}
-                                    await i.update({embeds:[test],components:[userbutton,enemybutton]})
-                            }}
-                    else if (usermodhp[`${userattackedid}`]>0){
-                        for (let x = 0; x<=userbutton.components.length-1;x++){
-                            if (userattackedid==userbutton.components[x].customId){
-                                test.fields[x]={name:userattackedcard.character,value :`${usermodhp[`${userattackedid}`]}/${userattackedcard.hp} ${enemyhp(usermodhp[`${userattackedid}`],userattackedcard.hp)}`}}}
-                            if (critical == 2){
-                                test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} and did critical ${enemydamage} damage`}}    
-                            else if(evasion ==0) {
-                                test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} but ${userattackedcard.character} evaded attack ${enemyattack.character}'s `}}    
-                            else{
-                                test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} and ${enemydamage} damage`}}
-                    for (let asd =0;asd<=enemybutton.components.length-1;asd++){
-                        if (enemydead.includes(enemybutton.components[asd].customId)){
-                        enemybutton.components[asd].setDisabled(true)}                        
-                        else if(enemybutton.components[asd].customId=='round'){
-                            enemybutton.components[asd].setDisabled(true)
-                            enemybutton.components[asd].setLabel(`Round ${p}`)}
-                        else{enemybutton.components[asd].setDisabled(false)}}
-                    for (let j = 0; j<=userbutton.components.length-1;j++){
-                        if (userbutton.components[j].customId == 'deleting'){userbutton.components[j].setDisabled(false)}
-                        else {userbutton.components[j].setDisabled(true)}}  
-                    await i.update({embeds:[test],components:[userbutton,enemybutton]})}
-                    cardused=[] 
+                                       test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} and did ${enemydamage} damage\n${userattackedcard.character} is defeated\nYOU WERE DEFEATED`}}
+                                       await i.editReply({embeds:[test],components:[]})
+                                       return
+                                    }}
+
+                if (usermodhp[`${userattackedid}`]>0){
+                    for (let x = 0; x<=userbutton.components.length-1;x++){
+                        if (userattackedid==userbutton.components[x].customId){
+                            test.fields[x]={name:`${userattackedcard.character} ${userattackedcard.element}` ,value :`${usermodhp[`${userattackedid}`]}/${userattackedcard.hp} ${enemyhp(usermodhp[`${userattackedid}`],userattackedcard.hp)}`}}}
+                    if (critical==2){
+                        test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} and did ${enemydamage} **CRITICAL DAMAGE!**.`}}
+                    else if (evasion==0){
+                        test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} but ${userattackedcard.character} evaded the attack successfully.`}}
+                    else{
+                        test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} and did ${enemydamage} damage.`}}
+            
+                    await i.editReply({embeds:[test],components:[userbutton,enemybutton]})
                 }
-                if (['enemy1', 'enemy2', 'enemy3', 'enemy4'].includes(i.customId)) {
-                    for (let j = 0; j<=enemybutton.components.length-1;j++){
-                    for (let kbc = 0; kbc <= enemy.length-1;kbc++){
-                        if(enemybutton.components[j].customId==i.customId && enemybutton.components[j].label == enemy[kbc].character){
-                    cardattacked= enemy[kbc]
-                    cardattackedoghp = enemy[kbc].hp
-                    cardattackedID = i.customId                            }}}
-                    for (let abi =0;abi<=enemybutton.components.length-1;abi++){             
-                    enemybutton.components[abi].setDisabled(true)}
-                    for (let pi = 0; pi<= userbutton.components.length-1; pi++){
-                        if (cardused.includes(userbutton.components[pi].customId))
-                            {userbutton.components[pi].setDisabled(true)}
-                        else if(usercarddead.includes(userbutton.components[pi].customId))
-                        {userbutton.components[pi].setDisabled(true)}
-                        else {userbutton.components[pi].setDisabled(false)}}
-                            test.setDescription(`**ROUND ${p}**`)
-                            await i.update({embeds:[test],components:[userbutton,enemybutton]})}
+                let roundchange = new Set()
+                cardused.forEach(element=>{roundchange.add(element)})
+                usercarddead.forEach(element=>{roundchange.add(element)})
+                if (roundchange.size==userbutton.components.length-1){
+                    p = p +1
+                    test.setDescription(`**ROUND ${p}**`)
+                        cardused = []
+                }
+                for (let k = 0;k<=enemybutton.components.length-1;k++){
+                    if(enemydead.includes(enemybutton.components[k].customId)){
+                        enemybutton.components[k].setDisabled(true)
+                    }else{enemybutton.components[k].setDisabled(false)}}
+                    for (let k = 0;k<=userbutton.components.length-1;k++){
+                        if(userbutton.components[k].customId=='deleting'){
+                            userbutton.components[k].setDisabled(false)}}
 
-                else if(['card1','card2','card3','card4'].includes(i.customId)){
-                    for (let j = 0; j<=userbutton.components.length-1;j++){
-                        if (i.customId == userbutton.components[j].customId){
-                            cardused.push(i.customId)
-                        for (let kbc = 0; kbc <= team.length-1;kbc++){
-                            if(userbutton.components[j].label == team[kbc].character && j==kbc)
-                            {cardattack = team[kbc]}}}}
-                        
-                            let iuy = number()
-                            if (crit.includes(iuy)){ 
-                                critical = 2}
-                            else if (evas.includes(iuy)){evasion = 0}
-                        //DAMAGE FORMULA FOR USERS         
-                        carddamage = Math.floor((cardattack.attack-cardattacked.defense)+(cardattack.agility - cardattacked.agility))*critical*evasion
-                        console.log(evasion,critical,iuy,carddamage,'urefj')
-                        const elementalDamage = elements(cardattack.element,cardattacked.element)
-                        if (elementalDamage==2){carddamage= carddamage+Math.floor(carddamage/4)}
-                        else if (elementalDamage==3){carddamage= carddamage-Math.floor(carddamage/4)}
-                        else if(elementalDamage==1){carddamage= carddamage-Math.floor(carddamage/10)}
-                        else{carddamage = carddamage+0}
+                    await i.editReply({embeds:[test],components:[userbutton,enemybutton]})}
+            else if (i.customId === 'deleting'){
+                i.fetchReply()
+                .then(reply=> reply.removeAttachments(),
+                collector.stop())             
+                await i.update({content:'You forfeit the battle',embeds:[],components:[]})}       
+    })
 
-                        for (let y = 0;y<=enemybutton.components.length-1;y++){if ( enemybutton.components[y].customId == cardattackedID){
-                            if(enemymodhp[`${cardattackedID}`] === undefined){
-                                h = cardattacked.hp
-                                enemymodhp[`${cardattackedID}`] = (h-carddamage)}
-                            else if (enemymodhp[`${cardattackedID}`] != undefined){
-                                h = enemymodhp[`${cardattackedID}`]
-                                enemymodhp[`${cardattackedID}`] = (h-carddamage)}}}
-                                    
-                        if (enemymodhp[`${cardattackedID}`] <=0){
-                            for (let x = 0; x<=enemybutton.components.length-1;x++){
-                                if (cardattackedID === enemybutton.components[x].customId){
-                                    test.fields[team.length+1+x]={name:`${cardattacked.character} ${cardattacked.element}`,value :`0/${cardattackedoghp} ${enemyhp(0,cardattackedoghp)}`}}}
-                                    if (manaval >4){
-                                        manaval = manaval - 5
-                                        test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} activates their ability.`}
-                                        await i.update({embeds:[test],components:[userbutton,enemybutton]})
-                                        abilityactivate = true
-                                        await wait(3000)}
-                                    else{
-                                    manaval = manavalue(manaval,p,evasion,critical)}
-                                    test.fields[team.length]={name:'Mana',value:`mana${manabar(manaval)}`}
-                                    if (critical == 2){
-                                    test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did critical ${carddamage} damage\n${cardattacked.character} is defeated`}}
-                                    else{test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did ${carddamage} damage\n${cardattacked.character} is defeated`}}
-                                    enemydead.push(cardattackedID)
-                                if (enemydead.length == enemybutton.components.length-1){
-                                    if (critical == 2){
-                                        test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did critical ${carddamage} damage\n${cardattacked.character} is defeated\nALL ENEMIES DEAD. YOU WIN!!`}}
-                                    else{    
-                                    test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did ${carddamage} damage\n${cardattacked.character} is defeated\nALL ENEMIES DEAD. YOU WIN!!`}}
-                                    if (usertabledata[0].max_stage<usertabledata[0].leveluniqueid){
-                                    let maxstageupdate = `update userdata set max_stage = ${usertabledata[0].leveluniqueid} where user_id = ${user_id}`
-                                await dbQuery(maxstageupdate)
-                                let useritem = await dbQuery(`Select * from useritems where user_id = ${user_id}`)
-                            await dbQuery(`update useritems set gold = ${useritem[0].gold+50} where user_id = ${user_id}`)}
-                            else {}
-                                if(staminadataexe[0].user_xp < staminadataexe[0].user_xp_limit){
-                                    await dbQuery(`update userstamina set user_xp = ${parseInt(staminadataexe[0].user_xp)+1} where user_id = ${user_id}`)}
-                                
-                                    collector.stop()
-                                    if (abilityactivate == true){await i.editReply({embeds:[test],components:[userbutton,enemybutton]})}
-                                            else{await i.update({embeds:[test],components:[userbutton,enemybutton]})}}
-                                else if (cardused.length===userbutton.components.length-1-usercarddead.length){
-                                    for (let asd =0;asd<=enemybutton.components.length-1;asd++)
-                                    if (enemybutton.components[asd].customId=='round'){enemybutton.components[asd].setDisabled(false)}
-                                    else{enemybutton.components[asd].setDisabled(true)}
-                                    for (let j = 0; j<=userbutton.components.length-1;j++){
-                                        if (userbutton.components[j].customId=='deleting'){userbutton.components[j].setDisabled(false)}
-                                        else{userbutton.components[j].setDisabled(true)}}
-                                        if (abilityactivate == true){await i.editReply({embeds:[test],components:[userbutton,enemybutton]})
-                                        abilityactivate = false}else{
-                                        await i.update({embeds:[test],components:[userbutton,enemybutton]})}}
-                                else if(cardused.length!=userbutton.components.length) 
-                                        {for (let asd =0;asd<=enemybutton.components.length-1;asd++){ 
-                                        if (enemydead.includes(enemybutton.components[asd].customId))
-                                            {enemybutton.components[asd].setDisabled(true)}
-                                        else if (enemybutton.components[asd].customId=='round'){enemybutton.components[asd].setDisabled(true)}
-                                        else{enemybutton.components[asd].setDisabled(false)}}
-
-                                        for (let j = 0; j<=userbutton.components.length-1;j++){
-                                            if (userbutton.components[j].customId=='deleting'){userbutton.components[j].setDisabled(false)}
-                                            else{userbutton.components[j].setDisabled(true)}}
-                                            if (abilityactivate == true){await i.editReply({embeds:[test],components:[userbutton,enemybutton]})
-                                        abilityactivate = false}
-                                            else{await i.update({embeds:[test],components:[userbutton,enemybutton]})}
-                                }}
-                                
-                                    //IF ENEMY HP MORE THAN ZERO
-                                else if(enemymodhp[`${cardattackedID}`]>0){
-                                    if (manaval >4){
-                                        manaval = manaval - 5
-                                    test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} activates their ability.`}
-                                    await i.update({embeds:[test],components:[userbutton,enemybutton]})
-                                    abilityactivate = true
-                                    await wait(3000)}
-                                    else{
-                                    manaval = manavalue(manaval,p,evasion,critical)}
-                                    test.fields[team.length]={name:'Mana',value:`mana ${manabar(manaval)}`}
-                                    for (let x = 0; x<=enemybutton.components.length-1;x++){
-                                        if (cardattackedID === enemybutton.components[x].customId){
-                                        test.fields[team.length+1+x]={name:`${cardattacked.character} ${cardattacked.element}`,value :`${enemymodhp[`${cardattackedID}`]}/${cardattackedoghp} ${enemyhp(enemymodhp[`${cardattackedID}`],cardattackedoghp)}`}}}
-                                        if (cardused.length==userbutton.components.length-1-usercarddead.length){
-                                            for (let asd =0;asd<=enemybutton.components.length-1;asd++){
-                                            if (enemybutton.components[asd].customId=='round'){enemybutton.components[asd].setDisabled(false)}
-                                            else {enemybutton.components[asd].setDisabled(true)}}
-                                            for (let j = 0; j<=userbutton.components.length-1;j++){
-                                                if (userbutton.components[j].customId=='deleting'){userbutton.components[j].setDisabled(false)}
-                                                else{userbutton.components[j].setDisabled(true)}}
-                                            if(critical==2){
-                                                test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did critical ${carddamage} damage`}}
-                                            else if (evasion==0){
-                                                test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} but ${cardattacked.character} evaded`}}
-                                            else{
-                                                test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did ${carddamage} damage`}}    
-                                                if (abilityactivate == true){await i.editReply({embeds:[test],components:[userbutton,enemybutton]})
-                                                abilityactivate = false}
-                                                else{await i.update({embeds:[test],components:[userbutton,enemybutton]})}}
-                                    else if (cardused.length!=userbutton.components.length) {
-                                        for (let asd =0;asd<=enemybutton.components.length-2;asd++){
-                                        if (enemydead.includes(enemybutton.components[asd].customId))
-                                        {enemybutton.components[asd].setDisabled(true)}
-                                        else if (enemybutton.components[asd].customId=='round'){enemybutton.components[asd].setDisabled(true)}
-                                        else{enemybutton.components[asd].setDisabled(false)}}
-                                    for (let j = 0; j<=userbutton.components.length-1;j++){
-                                        if (userbutton.components[j].customId == 'deleting'){userbutton.components[j].setDisabled(false)}
-                                        else{userbutton.components[j].setDisabled(true)}}
-                                        if(critical==2){
-                                            test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did critical ${carddamage} damage`}}
-                                        else if (evasion == 0){
-                                        test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} but ${cardattacked.character} successfully evaded`}}
-                                        else{
-                                            test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did ${carddamage} damage`}}
-                                        if (abilityactivate == true){await i.editReply({embeds:[test],components:[userbutton,enemybutton]})
-                                        abilityactivate = false}
-                                        else{await i.update({embeds:[test],components:[userbutton,enemybutton]})}
-                                        }}}
-                                if (i.customId === 'deleting'){
-                                   i.fetchReply()
-                                    .then(reply=> reply.removeAttachments(),
-                                    collector.stop())
-                                    collector.stop()
-
-                                    await i.update({content:'You forfeit the battle',embeds:[],components:[]})                                    
-                                }
-                    });
-                    collector.on('end', collected => {})
-                }}}
-     }}
-                
+    }}}}}
 }}
+
 export{ping}

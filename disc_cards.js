@@ -44,15 +44,15 @@ function elements(a,b){if (a =='light'&&b == '<:dark:910723272495222794>'){retur
 else if(a=='<:dark:910723272495222794>'&&b == 'light'){return 0.25}
 else if(a == '<:fire:916337311397052416'&&b=='<:wind:916336940343771156>'){return 0.25}
 else if(a=='<:wind:916336940343771156>'&&b== '<:nature:910561837492346931>'){return 0.25}
-else if (a =='<:nature:910561837492346931>'&&b=='<:download:910194644648861776>'){return 0.25}
-else if(a =='<:download:910194644648861776>'&&b ==':zap:'){return 0.25}
+else if (a =='<:nature:910561837492346931>'&&b=='<:earth:910194644648861776>'){return 0.25}
+else if(a =='<:earth:910194644648861776>'&&b ==':zap:'){return 0.25}
 else if (a==':zap:'&&b=='<:water:916338240179552267>'){return 0.25}
 else if(a == '<:water:916338240179552267>'&&b == '<:fire:916337311397052416'){return 0.25}
 
 else if (a == '<:wind:916336940343771156>'&& b=='<:fire:916337311397052416'){return -0.25}
 else if (a=='<:nature:910561837492346931>'&&b=='<:wind:916336940343771156>'){return -0.25}
-else if (a=='<:download:910194644648861776>'&&b=='<:nature:910561837492346931>'){return -0.25}
-else if (a==':zap:'&&b=='<:download:910194644648861776>'){return -0.25}
+else if (a=='<:earth:910194644648861776>'&&b=='<:nature:910561837492346931>'){return -0.25}
+else if (a==':zap:'&&b=='<:earth:910194644648861776>'){return -0.25}
 else if (a=='<:water:916338240179552267>'&&b==':zap:'){return -0.25}
 else if (a=='<:fire:916337311397052416'&&b=='<:water:916338240179552267>'){return -0.25}
 
@@ -60,14 +60,14 @@ else if (a == 'light'&&b=='light'){return 0.15}
 else if (a=='<:dark:910723272495222794>'&&b=='<:dark:910723272495222794>'){return -0.15}
 else if(a=='<:wind:916336940343771156>'&b=='<:wind:916336940343771156>'){return -0.15}
 else if(a=='<:nature:910561837492346931>'&&b=='<:nature:910561837492346931>'){return -0.15}
-else if(a=='<:download:910194644648861776>'&&b=='<:download:910194644648861776>'){return -0.15}
+else if(a=='<:earth:910194644648861776>'&&b=='<:earth:910194644648861776>'){return -0.15}
 else if(a==':zap:'&&b==':zap:'){return -0.15}
 else if(a=='<:water:916338240179552267>'&&b=='<:water:916338240179552267>'){return -0.15}
 else if (a=='<:fire:916337311397052416>'&&b=='<:fire:916337311397052416>'){return -0.15}
 else if (a==':sparkles:'&&b==':sparkles:'){return 0.15}
 }
 function rarrity() { return Math.floor(Math.random() * (5 - 1 + 1)) + 1};
-const Kurisu_Makise = new One_Star('Steins Gate',':leaves:',1,':star:','Kurisu Makise',85,75,90,75,'','https://wallpapercave.com/wp/wp4088492.png');
+const Kurisu_Makise = new One_Star('Steins Gate','<:nature:910561837492346931>',1,':star:','Kurisu Makise',85,75,90,75,'','https://wallpapercave.com/wp/wp4088492.png');
 
 const All_Might = new One_Star('My Hero Academia',':sparkles:',2,':star:', 'All Might', 90, 100,100,100,'                      Hey Villain.. Have you ever heard these words ?     **GO BEYOND !!  PLUS ULTRA !!!! **                                                                                           ','https://i.redd.it/yiwh3w1oy9i21.jpg')
 const Midoriya_Izuku = new One_Star('My Hero Academia', '<:wind:916336940343771156>',3,':star:', 'Midoriya Izuku', 80, 85, 75, 88,'', 'https://cdn.discordapp.com/attachments/901751803824205865/903833400970997790/AnimeX_920382.jpeg')
@@ -86,7 +86,7 @@ const Uchiha_Itachi = new One_Star('Naruto','<:dark:910723272495222794>',12,':st
 
 const Asta = new One_Star('Black Clover', '<:dark:910723272495222794>',13, ':star:', 'Asta', 89,84,77,75,'','https://cdn.discordapp.com/attachments/901751803824205865/903834262002876508/AnimeX_919194.jpeg')
 
-const Son_Goku = new One_Star('Dragon Ball Super', '<:fire:916337311397052416>',14,':star:', 'Son Goku', 98,95,75,100,'','https://cdn.discordapp.com/attachments/901751803824205865/910098740403126282/1658412902_BoilingPowerSuperSaiyanGodGokuArtDragonBallZDokkanBattle.jpg.3f152d0d629b448d228979692a8255a6.jpg')
+const Son_Goku = new One_Star('Dragon Ball Super', '<:fire:916337311397052416>',14,':star:', 'Son Goku', 98,95,75,100,'I ain\'t no hero of justice, but anyone who tries to hurt my friends, IS GONNA PAY!!!','https://cdn.discordapp.com/attachments/901751803824205865/910098740403126282/1658412902_BoilingPowerSuperSaiyanGodGokuArtDragonBallZDokkanBattle.jpg.3f152d0d629b448d228979692a8255a6.jpg')
 const Vegeta = new One_Star('Dragon Ball Super', '<:fire:916337311397052416>',15, ':star:', 'Vegeta', 90,85,85,90,'','https://cdn.discordapp.com/attachments/897181776982720563/900934385522602045/23b07582de80aee1a628828fc5961686.jpg')
 
 const Satoru_Gojo = new One_Star('Jujutsu Kaisen',':zap:',16,':star:','Satoru Gojo',80,93,78,93,'Dying to win and risking death to win are completely different, Megumi','https://cdn.discordapp.com/attachments/897181776982720563/944872606136430612/AnimeX_932399.jpeg')
@@ -94,9 +94,9 @@ const Satoru_Gojo = new One_Star('Jujutsu Kaisen',':zap:',16,':star:','Satoru Go
 
 const Temple_Demon = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',701,':star:','Temple Demon',100,75,75,75,'','https://cdn.discordapp.com/attachments/897181776982720563/910719423197900800/Temple_Demon.jpg')
 const Sakonji_Urokodaki = new One_Star('Kimetsu No Yaiba',':sparkles:',702,':star:','Sakonji Urokodaki',80,75,74,74,'','https://cdn.discordapp.com/attachments/897181776982720563/910560913474584636/Urokodaki_-_Kimetsu_no_Yaiba_by_A2T-will-Draw_on_DeviantArt.jpg')
-const Hand_Demon = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',703,':star:','Hand Demon',81,83,88,72,'','https://cdn.discordapp.com/attachments/897181776982720563/910926039528644618/ddf8222d47c1fe0a20b5c0c67f4d048a.jpg')
-const Swamp_Demon = new One_Star('Kimetsu No Yaiba','<:download:910194644648861776>',704,':star:','Swamp Demon',76,88,80,90,'','https://cdn.discordapp.com/attachments/897181776982720563/910915537121443860/images.jpg')
-const susamaru = new One_Star('Kimetsu No Yaiba','<:download:910194644648861776>',705,':star:','Susamaru', 80,85,78,75,'','https://cdn.discordapp.com/attachments/897181776982720563/910555605347991562/Susamaru_--_Kimetsu_no_Yaiba_by_DinocoZero_on_DeviantArt.jpg')
+const Hand_Demon = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',703,':star:','Hand Demon',81,83,88,72,'','https://cdn.discordapp.com/attachments/901751803824205865/910557155457900564/Hand_Demon_about_to_kill_Sabito.png')
+const Swamp_Demon = new One_Star('Kimetsu No Yaiba','<:earth:910194644648861776>',704,':star:','Swamp Demon',76,88,80,90,'','https://cdn.discordapp.com/attachments/897181776982720563/910915537121443860/images.jpg')
+const susamaru = new One_Star('Kimetsu No Yaiba','<:earth:910194644648861776>',705,':star:','Susamaru', 80,85,78,75,'','https://cdn.discordapp.com/attachments/897181776982720563/910555605347991562/Susamaru_--_Kimetsu_no_Yaiba_by_DinocoZero_on_DeviantArt.jpg')
 const yahaba = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',706,':star:','Yahaba',75,78,88,70,'','https://cdn.discordapp.com/attachments/897181776982720563/944866146409127946/yahaba.jpeg')
 const kyogai = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',707,':star:','Kyogai',75,86,90,70,'','https://cdn.discordapp.com/attachments/897181776982720563/944868474151387160/kyogai.jpg')
 const rui = new One_Star('Kimetsu No Yaiba','',708,':star:','Rui',77,86,79,83,'','https://cdn.discordapp.com/attachments/897181776982720563/910136236419723294/e8513b282544798debebdeb47dcdb86f.jpg')
