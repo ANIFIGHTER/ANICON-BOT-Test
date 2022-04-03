@@ -132,7 +132,7 @@ const ping = {data : new SlashCommandBuilder()
                 if (['1','2','3','4'].includes(i.customId)){
                     let currencycheck = await dbQuery(`Select * from useritems where user_id= ${user_id}`)
                     if (currencycheck[0].gold<1000){
-                        await i.update({content:`You only have ${currencycheck[0].gold} tricons.`,embeds :[], components:[]})}
+                        await i.update({content:`You have ${currencycheck[0].gold} tricons.`,embeds :[], components:[]})}
                     else{   
                         await dbQuery(`Update useritems set gold = ${currencycheck[0].gold-1000} where user_id = ${user_id}`)
                     cardspulled[5] = new discord.MessageEmbed()

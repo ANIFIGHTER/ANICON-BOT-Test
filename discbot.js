@@ -75,8 +75,7 @@ client.on('interactionCreate', async (interaction) => {
     
 });
 
-let cdrem = `update cooldowns set battle = 'NO', inv = 'NO',teamview = 'NO',dex = 'NO',banner = 'NO'`;
-con.query(cdrem,async function(err){if (err){throw err;}})
+
 
 // client.on('interactionCreate', async (interaction) => {
 //     if (interaction.isButton()){
@@ -94,17 +93,17 @@ con.query(cdrem,async function(err){if (err){throw err;}})
     
 // });
 
-client.on('messageCreate', async (message) => {
-    let inst = new discord.MessageEmbed();
-    inst.setAuthor(message.author.tag, message.author.avatarURL());
-    inst.setColor('BLUE');
-    inst.setTitle('**INSTRUCTIONS**')
-    inst.setDescription('This is an embed');
+// client.on('messageCreate', async (message) => {
+//     let inst = new discord.MessageEmbed();
+//     inst.setAuthor(message.author.tag, message.author.avatarURL());
+//     inst.setColor('BLUE');
+//     inst.setTitle('**INSTRUCTIONS**')
+//     inst.setDescription('This is an embed');
     
-    if (message.content === `${a}jankenpun`) {        
-        await message.channel.send({embeds:[inst]});
-    }
-});
+//     if (message.content === `${a}jankenpun`) {        
+//         await message.channel.send({embeds:[inst]});
+//     }
+// });
 
 // client.on('messageCreate', async(message) =>{
 //     if (message.content.startsWith(`${a}info`)) {

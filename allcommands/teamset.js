@@ -45,7 +45,6 @@ const ping = {
     async execute(interaction){
         let card_id = interaction.options.getString('card_no')
         let card_position = interaction.options.getString('position')
-        console.log(card_id,card_position)
         if (parseInt(card_position)<0 || 4 < parseInt(card_position) ){
             interaction.reply('Not entered valid position. Plase enter between 1 and 4')}
             else{
@@ -60,6 +59,7 @@ const ping = {
                 let userdataquery = `SELECT * from gamedata where card_owner = ${user_id}`
                     let userdata = await dbQuery(userdataquery)
                     for (let x = 0;x<=userdata.length-1;x++){if (x == (card_id-1)){card = userdata[x]}}
+                if (card!=undefined){
                 let cardsselection = `SELECT * FROM gamedata WHERE card_id = ${card.card_id} and card_owner = ${user_id}`;
                 let data = await dbQuery(cardsselection)
                     if (data === undefined) {
@@ -93,7 +93,7 @@ const ping = {
                                 .setStyle('DANGER')
                             )
                         await interaction.reply({content:`${card_name(abc[0].card_unique_id)} is already present at position ${card_position}.
-                        Do you want it to replace it by ${card_name(card.card_unique_id)} ?`,components:[confirmation]})}
+                        Do you want it to replace it by ${card_name(card.card_unique_id)} ?`,components:[confirmation]})}}
             let idofrefine
             interaction.fetchReply()
                 .then (reply=> idofrefine = reply.id)

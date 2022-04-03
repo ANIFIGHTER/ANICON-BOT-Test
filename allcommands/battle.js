@@ -3,6 +3,7 @@ import canvass from 'canvas'
 import {SlashCommandBuilder} from '@discordjs/builders';
 import mysql from 'mysql2';
 import { All_Cards as cards, enemy as enemylist,enemyhp,manabar,manavalue,elements} from '/ASHWIN/JavaScript/disc_cards.js';
+import {talent,talenteffect as talfect,surge} from '/ASHWIN/JavaScript/talents.js';
 import util from 'util'
 import dotenv from 'dotenv';
 dotenv.config();
@@ -85,15 +86,19 @@ const ping = {
                         if (teamdata[k].card_unique_id== cards[l].uniqueID){
                             team.push({...cards[l]})
                         }}}
+
                         for (let b = 0; b<=team.length-1;b++){
                             for (let v = 0;v<=teamdata.length-1;v++){
-                                if (team[b].uniqueID==teamdata[v].card_unique_id&&b+1==teamdata[v].team_status)
-                                {team[b].hp = Math.floor(team[b].hp + (0.02*teamdata[v].card_lvl*team[b].hp)+(team[b].hp*0.2*teamdata[v].card_rarity))
+                                console.log(team[b].uniqueID)
+                                console.log(teamdata[v].card_unique_id)
+                                if (team[b].uniqueID==teamdata[v].card_unique_id&&b==v)
+                                {console.log(69387541)
+                                    team[b].hp = Math.floor(team[b].hp + (0.02*teamdata[v].card_lvl*team[b].hp)+(team[b].hp*0.2*teamdata[v].card_rarity))
                                 team[b].attack = Math.floor(team[b].attack + (team[b].attack*0.2*teamdata[v].card_rarity) + (team[b].attack*0.02*teamdata[v].card_lvl))
                                 team[b].defense = Math.floor(team[b].defense + (team[b].defense*0.2*teamdata[v].card_rarity) + (team[b].defense*0.02*teamdata[v].card_lvl))
                                 team[b].agility = Math.floor(team[b].agility + (team[b].agility*0.2*teamdata[v].card_rarity) + (team[b].agility*0.02*teamdata[v].card_lvl)) 
-                            }}}
-                            
+                            }}} 
+console.log(team)
             let enemiesquery = `Select * from stages where leveluniqueid = ${userloc}`
             const enemies = await dbQuery(enemiesquery)
                 for(let x = 0; x <= enemies.length-1;x++){
@@ -112,21 +117,21 @@ const ping = {
 
             let manavaluser = 0
             let manavalenemy = 0
-            const canvas = canvass.createCanvas(1150, 675);
+            const canvas = canvass.createCanvas(1250, 825);
             const context = canvas.getContext('2d')
-            // const background = await canvass.loadImage('https://cdn.discordapp.com/attachments/897181776982720563/900386586074693652/gradienta-LeG68PrXA6Y-unsplash_1.jpg')
-            // context.drawImage(background, 0, 0, canvas.width, canvas.height)
+            const background = await canvass.loadImage('https://cdn.discordapp.com/attachments/897181776982720563/900386586074693652/gradienta-LeG68PrXA6Y-unsplash_1.jpg')
+            context.drawImage(background, 0, 0, canvas.width, canvas.height)
             for (let x = 0;x<=4;x++){
                 if (team.length==x){break;}else{
             const hijk = await canvass.loadImage(team[x].artlink)
-            let vbn = (25+(275*x))
-            context.drawImage(hijk,vbn,25,275,300)}}
+            let vbn = (25+(300*x))
+            context.drawImage(hijk,vbn,25,300,375)}}
 
             for (let x = 0;x<=4;x++){
                 if (enemy.length == x){break;}else{
             const kjhu = await canvass.loadImage(enemy[x].artlink)
-            let vbn = (25+(275*x))
-            context.drawImage(kjhu,vbn,350,275,300)}}
+            let vbn = (25+(300*x))
+            context.drawImage(kjhu,vbn,425,300,375)}}
             
             const attachment = new discord.MessageAttachment(canvas.toBuffer());
             attachment.setName('test.png')
@@ -196,6 +201,7 @@ const ping = {
         let enemydead = [];
         let livingenemy = []
         let livingcard = []
+        let talentactivationuser = []
         let crit = [12,32,97,47,37]
         let evas = [1,5,95,45,27,]
         
@@ -211,7 +217,7 @@ const ping = {
             let evasion = 1
             let critical = 1
             let abilityactivate = false
-            
+
             if (['enemy1', 'enemy2', 'enemy3', 'enemy4'].includes(i.customId)) {
                 for (let j = 0; j<=enemybutton.components.length-1;j++){
                 for (let kbc = 0; kbc <= enemy.length-1;kbc++){
@@ -236,8 +242,9 @@ const ping = {
                     if (i.customId == userbutton.components[j].customId){
                         cardused.push(i.customId)
                         for (let kbc = 0; kbc <= team.length-1;kbc++){
-                            if(userbutton.components[j].label == team[kbc].character && j==kbc)
-                                {cardattack = team[kbc]}}}}
+                            if(userbutton.components[j].label == team[kbc].character && j==kbc){
+                                    cardattack = team[kbc]
+                                cardattack.button_id= userbutton.components[j].customId}}}}
             
             for(let f = 0;f<=userbutton.components.length-1;f++){
                 userbutton.components[f].setDisabled(true)}
@@ -247,22 +254,35 @@ const ping = {
             if (crit.includes(iuy)){ critical = 2}
             else if (evas.includes(iuy)){evasion = 0}
             let elementalDamage = elements(cardattack.element,cardattacked.element)
-            if (elementalDamage==undefined){elementalDamage=1}
-            else{elementalDamage= Math.floor(elementalDamage*cardattack.attack)}
-            //DAMAGE FORMULA FOR USERS         
-            carddamage = Math.floor((cardattack.attack-cardattacked.defense)+(cardattack.agility - cardattacked.agility)+elementalDamage)*critical*evasion
-            
+            if (elementalDamage==undefined){elementalDamage=0}            
+
+            let talentkilled
+            //TALENT ACTIVATION
+                let ra
+                let teamposition
+                teamdata.forEach(element => {if(cardattack.uniqueID==element.card_unique_id)
+                    {ra = element.card_rarity
+                    teamposition = element.team_status}});
+                    let talenteffect =talent(cardattack,ra,p,usermodhp,enemymodhp,
+                        cardattackedID,cardattacked,usercarddead,talentactivationuser,teamposition,
+                        userattackedid,userattackedcard,enemybutton,userbutton,manavaluser )
+                    if (talenteffect[0].length>0){
+                        test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${talenteffect[0]}`}
+                    if (talenteffect[1]!=0){test.fields[talenteffect[1]]=talenteffect[2]}
+                    await i.update({embeds:[test],components:[userbutton,enemybutton]})
+                    abilityactivate = true      
+                    await wait(3000)}
+                if (talenteffect[3] == true){
+                manavaluser = manavalue(manavaluser,p,evasion,critical)}
+
+            //DAMAGE FORMULA FOR USERS
+            carddamage = Math.floor((cardattack.attack-cardattacked.defense)+(cardattack.agility - cardattacked.agility)+(elementalDamage*cardattack.attack))*critical*evasion
+            console.log(cardattack,cardattacked)
+            console.log(carddamage)
+            surge(cardattack,ra,carddamage,usermodhp)
+
             enemymodhp[`${cardattackedID}`] = enemymodhp[`${cardattackedID}`]-carddamage
-            
-            if (manavaluser >4){
-                manavaluser = manavaluser - 5
-            test.fields[team.length]={name:'Mana',value:`mana ${manabar(manavaluser)}`}
-            test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} activates their ability.`}
-            await i.update({embeds:[test],components:[userbutton,enemybutton]})
-            abilityactivate = true      
-            await wait(3000)}
-            else{
-            manavaluser = manavalue(manavaluser,p,evasion,critical)}
+    
             //IF ENEMY HP LESS THAN ZERO
             if (enemymodhp[`${cardattackedID}`] <=0){
                 enemydead.push(cardattackedID)
@@ -274,7 +294,7 @@ const ping = {
                         if (critical == 2){critical = 1
                             test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did critical ${carddamage} damage\n${cardattacked.character} is defeated`}}
                         else{test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did ${carddamage} damage\n${cardattacked.character} is defeated`}}
-                        if (abilityactivate == true){await i.editReply({embeds:[test],components:[]})}
+                        if (abilityactivate == true){await i.editReply({embeds:[test],components:[userbutton,enemybutton]})}
                                         else{await i.update({embeds:[test],components:[userbutton,enemybutton]})}
                         }else if (enemydead.length == enemybutton.components.length){
                             if (critical == 2){ critical = 1
@@ -323,6 +343,7 @@ const ping = {
                     for(let m = 0;m<=enemy.length-1;m++){
                             if (enemyattacktemp.label==enemy[m].character){
                                 enemyattack = enemy[m]
+                                enemyattack.button_id = enemyattacktemp.customId
                             livingenemy=[]}}
                 
                     //SELECTING USERCARD THAT IS TO BE ATTACKED
@@ -413,6 +434,16 @@ const ping = {
                 cardused.forEach(element=>{roundchange.add(element)})
                 usercarddead.forEach(element=>{roundchange.add(element)})
                 if (roundchange.size==userbutton.components.length-1){
+                    let taleffect = talfect(talentactivationuser,userbutton,team,p,usermodhp,enemymodhp,cardattackedID
+                        ,cardattacked,usercarddead,enemydead)
+                    if (taleffect[0].length>1){
+                        await wait(3000)
+                        test.fields[taleffect[1]]=taleffect[2]
+                        test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${taleffect[0]}`}        
+                        // taleffect[0]=''
+                        await i.editReply({embeds:[test],components:[userbutton,enemybutton]})
+                    await wait(3000)
+                    }
                     p = p +1
                     test.setDescription(`**ROUND ${p}**`)
                         cardused = []

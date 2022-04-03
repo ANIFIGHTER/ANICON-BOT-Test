@@ -75,10 +75,9 @@ const ping = {
                     totalinvembeds[i].setAuthor({name:`${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`});
                     totalinvembeds[i].setTitle('**INVENTORY**');
                     totalinvembeds[i].setColor('AQUA');
-                    totalinvembeds[i].setDescription('')
                     totalinvembeds[i].setThumbnail('https://artfiles.alphacoders.com/114/114357.jpg')
                     totalinvembeds[i].setTimestamp()
-                    totalinvembeds[i].setFooter(`${i} of ${noofpages}`)
+                    totalinvembeds[i].setFooter({text:`${i} of ${noofpages}`})
                     for (;j < 10*i; j++) {
                         totalinvembeds[i].addField(`${j+1} | **${card_name(data[j].card_unique_id)}** | ${stars[data[j].card_rarity]} | ${card_element(data[j].card_unique_id)}`, `LEVEL: ${data[j].card_lvl} |ID: ${data[j].card_id} | LIMIT BREAK: ${data[j].limitbreak}`);   
                 }}
@@ -92,7 +91,7 @@ const ping = {
                         totalinvembeds[i].setColor('AQUA');
                         totalinvembeds[i].setDescription('')
                         totalinvembeds[i].setTimestamp()
-                        totalinvembeds[i].setFooter(`${i} of ${noofpages}`)
+                        totalinvembeds[i].setFooter({text:`${i} of ${noofpages}`})
                         for (; j < 10*i; j++) {
                             if (j === data.length){break;}
                             else {totalinvembeds[i].addField(`${j+1} | **${card_name(data[j].card_unique_id)}** | ${stars[data[j].card_rarity]} | ${card_element(data[j].card_unique_id)}`,  `LEVEL: ${data[j].card_lvl} | ID: ${data[j].card_id} | LIMIT BREAK: ${data[j].limitbreak}`);}

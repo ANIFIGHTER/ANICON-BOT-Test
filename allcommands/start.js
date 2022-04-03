@@ -43,7 +43,7 @@ const ping = {
                 await interaction.reply('Already Registered');            
             }else if (!err){
                 const randomcarrd = randomcard(cards);
-                let cardgenerate = `INSERT INTO gamedata (card_unique_id, card_rarity, card_lvl, card_owner) VALUES('${randomcarrd.uniqueID}', '4','20', '${randomcarrd.element}' , ${id})`;
+                let cardgenerate = `INSERT INTO gamedata (card_unique_id, card_rarity, card_lvl, card_owner) VALUES('${randomcarrd.uniqueID}', '4','20', ${id})`;
                 await dbQuery(cardgenerate)
                 let stage = `INSERT INTO userdata (user_id,location,area,stage,leveluniqueid,max_stage) VALUES(${id},0,0,0,0,0)`;
                 await dbQuery(stage)
@@ -51,7 +51,7 @@ const ping = {
                 await dbQuery(stamina)   
                 let itementry = `INSERT INTO useritems (user_id,gold) VALUES(${id},5000)`
                 await dbQuery(itementry)
-                await interaction.reply(`Cadet <@${id}>, welcome to the Lost Angeles City! Check out your inventory for your new soul crystal using /inv`);
+                await interaction.reply(`Summoner <@${id}>, welcome to the Necropsis! Check out your inventory for your new soul crystal using /inv`);
         }})    
     }
 }

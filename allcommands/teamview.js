@@ -29,6 +29,8 @@ if (err) {
 function card_name(a) {
     for (let nbv = 0;nbv<=cards.length;nbv++){if (cards[nbv].uniqueID == a){return cards[nbv]}}}
 let stars = ['',':star:',':star::star:',':star::star::star:',':star::star::star::star:',':star::star::star::star::star:']
+function card_element(a) {
+    for (let nbv = 0;nbv<=cards.length;nbv++){if (cards[nbv].uniqueID == a){return cards[nbv].element}}}
 const ping = {
 	data: new SlashCommandBuilder()
 		.setName('teamview')
@@ -71,7 +73,7 @@ const ping = {
                             if ( i+1 == data[hawa].team_status){
                                 let card = card_name(data[hawa].card_unique_id)
                         teamembeds[0].fields[i]=
-                            {name:`${i+1} | ${card.character} | ${data[hawa].card_element}`,value:`${stars[data[hawa].card_rarity]} | ${data[hawa].card_lvl} | ${data[hawa].card_id}`}    
+                            {name:`${i+1} | ${card.character} | ${card.element}`,value:`${stars[data[hawa].card_rarity]} | ${data[hawa].card_lvl} | ${data[hawa].card_id}`}    
                     teamembeds[i+1] = new discord.MessageEmbed();
                     teamembeds[i+1].setAuthor({name:`${interaction.user.tag}`,iconURL: `${interaction.user.avatarURL()}`});
                     teamembeds[i+1].setTitle(`**${card.character}** (${data[hawa].card_id})\nSERIES:${card.series} `);

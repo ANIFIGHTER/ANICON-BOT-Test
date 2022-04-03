@@ -33,6 +33,7 @@ const ping = {
         details.setTitle(`${card.character}`);
         details.setDescription(`**Series** : ${card.series}\n**Element** : ${card.element}\n**Rarity** : **${card.rarity}**\n**HP** : ${card.hp}\n**Attack** : ${card.attack}\n**Defense** : ${card.defense}\n**Agility** : ${card.agility}`);
         details.setImage(`${card.artlink}`)
+        details.setTimestamp()
         details.setThumbnail('https://static.zerochan.net/Nakajima.Atsushi.%28Bungou.Stray.Dogs%29.full.2028610.jpg')
         details.setFooter({text:`${card.quote}`, iconURL:'https://static.zerochan.net/Nakajima.Atsushi.%28Bungou.Stray.Dogs%29.full.2028610.jpg'})
             await interaction.reply({embeds:[details]})

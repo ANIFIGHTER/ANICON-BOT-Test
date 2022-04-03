@@ -193,8 +193,14 @@ let abla = 238748724;
 // let r = 5
 // if(r>0&&r<5){console.log('4e3d')}else{console.log('erwas')}
 
-let a = [1,5,6,854,65,632,7452,54]
-let f = Math.floor(Math.random()*2-1)
-for (let x=0;x<50000;x++){
-    
-if (f>0){console.log('demn')}}
+// let a = [1,5,6,854,65,632,7452,54]
+// let f = Math.floor(Math.random()*2-1)
+// for (let x=0;x<50000;x++){
+    // 
+// if (f>0){console.log('demn')}}
+// let t = new Set([{asd:45},{dfg:78}])
+// let g = new Set([1])
+// let c=45
+// let a = new Object()
+// a[`${t.asd}`+' '+`${c}`]=852
+// t.forEach(element =>{console.log(Object.getOwnPropertyNames(element))})

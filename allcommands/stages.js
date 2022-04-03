@@ -61,7 +61,7 @@ const ping = {
             let usermaxstage = datauser[0].max_stage
         
         if (currentlocid ==0){await interaction.reply('You have to travel to a location first. Use /map to know your current position and use /location to travel to a location.')}
-        else if (currentareaid==0){await interaction.reply(`You are not in an area. Use /map to know your current position and use /area to travel to an area.' `)}
+        else if (currentareaid==0){await interaction.reply(`You are not in an area. Use /map to know your current position and use /area to travel to an area. `)}
         else if (currentlocid==1 &&currentareaid == 1 && stage_id==1){
             stagembed.setTitle(`Stage  1-1-1`)
             stagembed.addFields({name:'STAGE DEFENDER',
@@ -84,6 +84,7 @@ const ping = {
             if (uniqueidfetch[x].enemy_unique_id == enemylist[k].uniqueID ){
                 enemy.push({...enemylist[k]})
             }}}
+            let enemies=uniqueidfetch
             for (let b = 0; b<=enemy.length-1;b++){
                 for (let v = 0;v<=enemies.length-1;v++){
                     if(enemy[b].uniqueID==enemies[v].enemy_unique_id){

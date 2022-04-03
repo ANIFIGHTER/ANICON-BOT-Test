@@ -7,7 +7,8 @@ function modifier(listofnum,modify_factor) {
   return newmodified;
 }  
 class One_Star {
-  constructor(series, element, uniqueID,rarity,  character, hp, attack, defense, agility,quote,artlink){
+  constructor(series, element, uniqueID,rarity,  character, hp, attack,
+     defense, agility,quote,artlink,talentname,talent_id,talent_type){
   this.series = series;
   this.element = element;
   this.uniqueID = uniqueID
@@ -19,6 +20,9 @@ class One_Star {
   this.agility = agility;
   this.quote = quote
   this.artlink = artlink;
+  this.talentname = talentname
+  this.talent_id = talent_id
+  this.talent_type = talent_type
   }
 
   stats_modifier(rarity) {
@@ -67,30 +71,33 @@ else if (a=='<:fire:916337311397052416>'&&b=='<:fire:916337311397052416>'){retur
 else if (a==':sparkles:'&&b==':sparkles:'){return 0.15}
 }
 function rarrity() { return Math.floor(Math.random() * (5 - 1 + 1)) + 1};
-const Kurisu_Makise = new One_Star('Steins Gate','<:nature:910561837492346931>',1,':star:','Kurisu Makise',85,75,90,75,'','https://wallpapercave.com/wp/wp4088492.png');
+const Kurisu_Makise = new One_Star('Steins Gate','<:nature:910561837492346931>',1,':star:','Kurisu Makise',85,75,90,75,'You can run away, but that’ll just make it worse!','https://wallpapercave.com/wp/wp4088492.png','',18,'active');
 
-const All_Might = new One_Star('My Hero Academia',':sparkles:',2,':star:', 'All Might', 90, 100,100,100,'                      Hey Villain.. Have you ever heard these words ?     **GO BEYOND !!  PLUS ULTRA !!!! **                                                                                           ','https://i.redd.it/yiwh3w1oy9i21.jpg')
-const Midoriya_Izuku = new One_Star('My Hero Academia', '<:wind:916336940343771156>',3,':star:', 'Midoriya Izuku', 80, 85, 75, 88,'', 'https://cdn.discordapp.com/attachments/901751803824205865/903833400970997790/AnimeX_920382.jpeg')
+const All_Might = new One_Star('My Hero Academia',':sparkles:',2,':star:', 'All Might', 90, 100,100,100,'                      Hey Villain.. Have you ever heard these words ?     **GO BEYOND !!  PLUS ULTRA !!!! **','https://i.redd.it/yiwh3w1oy9i21.jpg','',3,'active')
+const Midoriya_Izuku = new One_Star('My Hero Academia', '<:wind:916336940343771156>',3,':star:', 'Midoriya Izuku', 80, 85, 75, 88,'', 'https://cdn.discordapp.com/attachments/901751803824205865/903833400970997790/AnimeX_920382.jpeg','',4,'active')
 
-const Kamado_Tanjiro = new One_Star('Kimetsu No Yaiba','<:water:916338240179552267>',4,':star:','Tanjiro Kamado', 82, 80, 78, 82,'', 'https://cdn.discordapp.com/attachments/897181776982720563/897181854476689418/dedyiiq-a2f1a41b-1bd2-48f2-99b3-2eee4ba9c95e.jpg')
-const Kyoujuro_Rengoku = new One_Star('Kimetsu No Yaiba','<:fire:916337311397052416>',5,':star:','Kyoujuro Rengoku', 85, 90, 85, 92,'', 'https://cdn.discordapp.com/attachments/897181776982720563/910136966497067048/35af966edcd7f824774faf611d6b61da.jpg')
-const Kamado_Nezuko = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',6,':star:','Nezuko Kamado',77,82,80,78,'','https://cdn.discordapp.com/attachments/897181776982720563/910156476276940930/dUZATuEbImELKiNYKhqidZvH3Q8oVOqfy7-rNgfGLak.png')
-const Zenitsu_Agatsuma = new One_Star('Kimetsu No Yaiba',':zap:',7,';star;','Zenitsu Agatsuma',74,96,78,98,'','https://cdn.discordapp.com/attachments/897181776982720563/910136968376119296/7cb673e1f999ba1b5ae5f6704ec449d8.jpg')
-const Tomioka_Giyuu = new One_Star('Kimetsu No Yaiba','<:water:916338240179552267>',17,':star:','Giyuu Tomioka',81,85,80,87,'','https://cdn.discordapp.com/attachments/897181776982720563/910135224627773460/-Giyu-Tomioka-kimetsu-no-yaiba-43457135-564-798.jpg')
-const Hashibira_Inosuke = new One_Star('Kimetsu No Yaiba',':sparkles:',8,':star:','Inosuke Hashibira',80,82,90,80,'','https://cdn.discordapp.com/attachments/897181776982720563/944869935358812240/Inosuke.jpg')
-const Kocho_Shinobu = new One_Star('Kimetsu No Yaiba','<:nature:910561837492346931>',9,':star:','Shinobu Kocho',75,78,82,86,'You mustn\'t think you are safe just because haven\'t been beheaded ','https://cdn.discordapp.com/attachments/776127159138779146/910133513376895006/02ebca9fb61d8d2bbf1904052c0a0f4b.jpg')
-const Tsuyuri_Kanao = new One_Star('Kimetsu No Yaiba',':sparkles:',10,':star:','Kanao Tsuyuri',82,86,85,87,'','https://cdn.discordapp.com/attachments/897181776982720563/910725201963155457/screen-4.jpg')
+const Kamado_Tanjiro = new One_Star('Kimetsu No Yaiba','<:water:916338240179552267>',4,':star:','Tanjiro Kamado', 82, 80, 78, 82,'', 'https://cdn.discordapp.com/attachments/897181776982720563/897181854476689418/dedyiiq-a2f1a41b-1bd2-48f2-99b3-2eee4ba9c95e.jpg','',5,'active')
+const Kyoujuro_Rengoku = new One_Star('Kimetsu No Yaiba','<:fire:916337311397052416>',5,':star:','Kyoujuro Rengoku', 85, 90, 85, 92,'', 'https://cdn.discordapp.com/attachments/897181776982720563/910136966497067048/35af966edcd7f824774faf611d6b61da.jpg','',6,'active')
+const Kamado_Nezuko = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',6,':star:','Nezuko Kamado',77,82,80,78,'','https://cdn.discordapp.com/attachments/897181776982720563/910156476276940930/dUZATuEbImELKiNYKhqidZvH3Q8oVOqfy7-rNgfGLak.png','',7,'active')
+const Zenitsu_Agatsuma = new One_Star('Kimetsu No Yaiba',':zap:',7,';star;','Zenitsu Agatsuma',74,96,78,98,'','https://cdn.discordapp.com/attachments/897181776982720563/910136968376119296/7cb673e1f999ba1b5ae5f6704ec449d8.jpg','',8,'active')
+const Tomioka_Giyuu = new One_Star('Kimetsu No Yaiba','<:water:916338240179552267>',17,':star:','Giyuu Tomioka',81,85,80,87,'','https://cdn.discordapp.com/attachments/897181776982720563/910135224627773460/-Giyu-Tomioka-kimetsu-no-yaiba-43457135-564-798.jpg','',9,'active')
+const Hashibira_Inosuke = new One_Star('Kimetsu No Yaiba',':sparkles:',8,':star:','Inosuke Hashibira',85,78,82,75,'','https://cdn.discordapp.com/attachments/897181776982720563/944869935358812240/Inosuke.jpg','',10,'active')
+const Kocho_Shinobu = new One_Star('Kimetsu No Yaiba','<:nature:910561837492346931>',9,':star:','Shinobu Kocho',75,78,82,86,'You mustn\'t think you are safe just because haven\'t been beheaded ','https://cdn.discordapp.com/attachments/776127159138779146/910133513376895006/02ebca9fb61d8d2bbf1904052c0a0f4b.jpg','',11,'active')
+const Tsuyuri_Kanao = new One_Star('Kimetsu No Yaiba',':sparkles:',10,':star:','Kanao Tsuyuri',82,86,85,87,'','https://cdn.discordapp.com/attachments/897181776982720563/910725201963155457/screen-4.jpg','',12,'active')
 
-const Uchiha_Sasuke = new One_Star('Naruto','<:dark:910723272495222794>',11,':star:','Uchiha Sasuke', 75, 87, 95, 90, '', 'https://cdn.discordapp.com/attachments/897181776982720563/910127985582018592/Uchiha_Sasuke_-_NARUTO_-_Image_1746665_-_Zerochan_Anime_Image_Board.jpeg')
-const Uchiha_Itachi = new One_Star('Naruto','<:dark:910723272495222794>',12,':star:','Uchiha Itachi', 78, 84, 92, 80, '', 'https://cdn.discordapp.com/attachments/901751803824205865/903832081858199572/AnimeX_926037.jpeg')
+const Uchiha_Sasuke = new One_Star('Naruto','<:dark:910723272495222794>',11,':star:','Uchiha Sasuke', 75, 87, 95, 90, '', 'https://cdn.discordapp.com/attachments/897181776982720563/910127985582018592/Uchiha_Sasuke_-_NARUTO_-_Image_1746665_-_Zerochan_Anime_Image_Board.jpeg','',13,'active')
+const Uchiha_Itachi = new One_Star('Naruto','<:dark:910723272495222794>',12,':star:','Uchiha Itachi', 78, 84, 92, 80, '', 'https://cdn.discordapp.com/attachments/901751803824205865/903832081858199572/AnimeX_926037.jpeg','',14,'active')
 
-const Asta = new One_Star('Black Clover', '<:dark:910723272495222794>',13, ':star:', 'Asta', 89,84,77,75,'','https://cdn.discordapp.com/attachments/901751803824205865/903834262002876508/AnimeX_919194.jpeg')
+const Asta = new One_Star('Black Clover', '<:dark:910723272495222794>',13, ':star:', 'Asta', 89,84,77,75,'','https://cdn.discordapp.com/attachments/901751803824205865/903834262002876508/AnimeX_919194.jpeg','',15,'active')
 
-const Son_Goku = new One_Star('Dragon Ball Super', '<:fire:916337311397052416>',14,':star:', 'Son Goku', 98,95,75,100,'I ain\'t no hero of justice, but anyone who tries to hurt my friends, IS GONNA PAY!!!','https://cdn.discordapp.com/attachments/901751803824205865/910098740403126282/1658412902_BoilingPowerSuperSaiyanGodGokuArtDragonBallZDokkanBattle.jpg.3f152d0d629b448d228979692a8255a6.jpg')
-const Vegeta = new One_Star('Dragon Ball Super', '<:fire:916337311397052416>',15, ':star:', 'Vegeta', 90,85,85,90,'','https://cdn.discordapp.com/attachments/897181776982720563/900934385522602045/23b07582de80aee1a628828fc5961686.jpg')
+const Son_Goku = new One_Star('Dragon Ball Super', '<:fire:916337311397052416>',14,':star:', 'Son Goku', 98,95,75,100,'I ain\'t no hero of justice, but anyone who tries to hurt my friends, IS GONNA PAY!!!','https://cdn.di/scordapp.com/attachments/901751803824205865/910098740403126282/1658412902_BoilingPowerSuperSaiyanGodGokuArtDragonBallZDokkanBattle.jpg.3f152d0d629b448d228979692a8255a6.jpg','',16,'active')
+const Vegeta = new One_Star('Dragon Ball Super', '<:fire:916337311397052416>',15, ':star:', 'Vegeta', 90,85,85,90,'','https://cdn.discordapp.com/attachments/897181776982720563/900934385522602045/23b07582de80aee1a628828fc5961686.jpg','',17,'active')
 
-const Satoru_Gojo = new One_Star('Jujutsu Kaisen',':zap:',16,':star:','Satoru Gojo',80,93,78,93,'Dying to win and risking death to win are completely different, Megumi','https://cdn.discordapp.com/attachments/897181776982720563/944872606136430612/AnimeX_932399.jpeg')
+const Satoru_Gojo = new One_Star('Jujutsu Kaisen',':zap:',16,':star:','Satoru Gojo',80,93,78,93,'Dying to win and risking death to win are completely different, Megumi','https://cdn.discordapp.com/attachments/897181776982720563/944872606136430612/AnimeX_932399.jpeg','Hollow Purple',2,'active')
 
+const Emiya_Shirou = new One_Star('Fate/stay night: Unlimited Blade Works','<:fire:916337311397052416>',18,':star:','Emiya Shirou',78,82,85,83,'I don\'t create swords. I create a world that contains infinite swords. This is the only magic allowed for me.','https://cdn.discordapp.com/attachments/897181776982720563/950308194675224576/9312c843-d8f4-4637-9b78-00d874dd5503.jpg','',19,'active')
+
+const Megumin = new One_Star('Kono Subarashii Sekai ni Shukufuku wo!','<:fire:916337311397052416>',19,':star:','Megumin',75,92,80,80,'EXPLOSION!!!','https://cdn.discordapp.com/attachments/897181776982720563/950307662715822110/1447e981-1951-4b6e-a7a2-4ec2daa78208.jpg','EXPLOSION !!',1,'passive')
 
 const Temple_Demon = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',701,':star:','Temple Demon',100,75,75,75,'','https://cdn.discordapp.com/attachments/897181776982720563/910719423197900800/Temple_Demon.jpg')
 const Sakonji_Urokodaki = new One_Star('Kimetsu No Yaiba',':sparkles:',702,':star:','Sakonji Urokodaki',80,75,74,74,'','https://cdn.discordapp.com/attachments/897181776982720563/910560913474584636/Urokodaki_-_Kimetsu_no_Yaiba_by_A2T-will-Draw_on_DeviantArt.jpg')
@@ -102,7 +109,8 @@ const kyogai = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',707,
 const rui = new One_Star('Kimetsu No Yaiba','',708,':star:','Rui',77,86,79,83,'','https://cdn.discordapp.com/attachments/897181776982720563/910136236419723294/e8513b282544798debebdeb47dcdb86f.jpg')
 
 const All_Cards = [Kurisu_Makise,All_Might,Kamado_Tanjiro,Kyoujuro_Rengoku,Uchiha_Sasuke,Uchiha_Itachi,Midoriya_Izuku,Asta,
-Son_Goku,Vegeta,Kamado_Nezuko,Zenitsu_Agatsuma,Tomioka_Giyuu,Hashibira_Inosuke,Kocho_Shinobu,Tsuyuri_Kanao,Satoru_Gojo]
+Son_Goku,Vegeta,Kamado_Nezuko,Zenitsu_Agatsuma,Tomioka_Giyuu,Hashibira_Inosuke,Kocho_Shinobu,Tsuyuri_Kanao,Satoru_Gojo,Emiya_Shirou,
+Megumin]
 const enemy = [Temple_Demon,Hand_Demon,Sakonji_Urokodaki,Swamp_Demon,susamaru,yahaba,kyogai,rui]
 // console.log(All_Cards.length)
 
@@ -111,7 +119,6 @@ for (let i = 0; i < All_Cards.length; i++) {
   let klab = All_Cards[i];
   for (let j = 0; j < waaa.length; j++){
     if (waaa[j] === klab.character) {
-    // console.log(klab)
   }};
 }
 
