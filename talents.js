@@ -1,26 +1,25 @@
 //TALENTS
 import { All_Cards as cardss,enemyhp} from '/ASHWIN/JavaScript/disc_cards.js';
 //return key = [battle detail,[hpposition],[hp],manachange]
-
-function talent(a,rarity,p,usermodhp,enemymodhp,cardattackedID
-    ,cardattacked,usercarddead,talentactivationuser ,teamposition,userattackedid,
-    userattackedcard,enemybutton,userbutton,enemydead,manaval  ){
+let km
+function talent(a,p,usermodhp,enemymodhp,cardattackedID
+    ,cardattacked,usercarddead,talentactivationuser,userattackedid,
+    userattackedcard,enemybutton,userbutton,enemydead,manaval,enemy,team,firstimeactivate){
     let line = ''
     let hpposition = 0
     let hpreturn = 0
     let manachange = false
-
 if (a.talent_id == 1){        
 //overload
-if (p==1){
-    talentactivationuser.push({[`${a.button_id}`]:teamposition})
+if (!talentactivationuser.includes(a.button_id)){
+    talentactivationuser.push(a.button_id)
     let rare = ['',,60,70,80,90]
     let edb
     rare.forEach(element => {
-        if (rarity == rare.indexOf(element))
+        if (a.rarity == rare.indexOf(element))
         {edb = element
             a.attack = a.attack*((100+element)/100)}})
-        line = line + `${a.character} uses ${a.talentname} and increases their attack by ${edb}%.`
+        line = line + `${a.character} uses ravage and increases their attack by ${edb}%.`
     }    
         }
 //elemental attack
@@ -42,7 +41,7 @@ cardattacked = userattackedcard}
     let rare = ['',,10,15,20,25]
     let edb
     rare.forEach(element => {
-        if (rarity == rare.indexOf(element))
+        if (a.rarity == rare.indexOf(element))
         {edb = element}})
         hp[`${cardidenti}`]=hp[`${cardidenti}`]- (Math.floor((edb/100)*a.attack))
         for (let x =0;x<=button[0].components.length-1;x++){
@@ -60,23 +59,31 @@ cardattacked = userattackedcard}
 if (a.talent_id==3){
     if(['card1','card2','card3','card4'].includes(a.button_id)){
         hp = usermodhp}else{hp = enemymodhp}
+    if ((hp[`${a.button_id}`]/a.hp)*100>50){}
         
 }
+// if (firstimeactivate==false){
+// for (let x = 0;x<enemy.length;x++){
+//     if (enemy[x].talent_id==4){line = line + `${enemy[x].character} uses **Fighting Sprit** and increases their defense by 20%. `}}
+// for (let x = 0;x<team.length;x++){
+//     if (team[x].talent_id==4){line = line + `${team[x].character} uses **Fighting Sprit** and increases their defense by 20%. `}}
+    // }
 return [line,hpposition,hpreturn,manachange]
 }
 
-function talenteffect(talentactivationuser,userbutton,team,p,usermodhp,enemymodhp,cardattackedID
-    ,cardattacked,usercarddead,enemydead){
+function talenteffect(talentactivationuser,userbutton,team,p,usermodhp,enemymodhp,
+    cardattackedID,cardattacked,usercarddead,enemydead){
         let cards = []
         let line = ''
         let hp
         let button
     let hpreturn
     let hpposition
+    
     talentactivationuser.forEach(element => {
         for (let x = 0;x<=userbutton.components.length -1;x++){
-    if (userbutton.components[x].customId==Object.getOwnPropertyNames(element)[0])
-            {team[x].team_id = Object.getOwnPropertyNames(element)[0]
+    if (userbutton.components[x].customId==element)
+            {team[x].team_id = element
             cards.push(team[x]) }}})
 
 cards.forEach(a=>{ 

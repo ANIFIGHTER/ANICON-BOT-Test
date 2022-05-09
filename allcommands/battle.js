@@ -89,16 +89,15 @@ const ping = {
 
                         for (let b = 0; b<=team.length-1;b++){
                             for (let v = 0;v<=teamdata.length-1;v++){
-                                console.log(team[b].uniqueID)
-                                console.log(teamdata[v].card_unique_id)
                                 if (team[b].uniqueID==teamdata[v].card_unique_id&&b==v)
-                                {console.log(69387541)
+                                {team[b].rarity = teamdata[v].card_rarity
                                     team[b].hp = Math.floor(team[b].hp + (0.02*teamdata[v].card_lvl*team[b].hp)+(team[b].hp*0.2*teamdata[v].card_rarity))
                                 team[b].attack = Math.floor(team[b].attack + (team[b].attack*0.2*teamdata[v].card_rarity) + (team[b].attack*0.02*teamdata[v].card_lvl))
                                 team[b].defense = Math.floor(team[b].defense + (team[b].defense*0.2*teamdata[v].card_rarity) + (team[b].defense*0.02*teamdata[v].card_lvl))
                                 team[b].agility = Math.floor(team[b].agility + (team[b].agility*0.2*teamdata[v].card_rarity) + (team[b].agility*0.02*teamdata[v].card_lvl)) 
                             }}} 
-console.log(team)
+            let teamcopy = JSON.parse(JSON.stringify(team))
+
             let enemiesquery = `Select * from stages where leveluniqueid = ${userloc}`
             const enemies = await dbQuery(enemiesquery)
                 for(let x = 0; x <= enemies.length-1;x++){
@@ -177,7 +176,7 @@ console.log(team)
             test.addFields({name : 'mana', value: `mana ${manabar(manavaluser)}`})
             for (let i = 0;i<=enemy.length-1;i++){
             test.addFields({name:`${enemy[i].character} ${enemy[i].element}`,value:`${enemy[i].hp}/${enemy[i].hp} ${enemyhp(enemy[i].hp,enemy[i].hp)}`})}
-            test.addFields({name : 'mana', value: `mana ${manabar(manavalenemy)}`},{name:'battle details', value: 'details'})    
+            test.addFields({name : 'mana', value: `mana ${manabar(manavalenemy)}`},{name:'battle details', value: `<@${user_id}>'s team attacks first.`})    
             test.setTimestamp()
             test.setFooter({text:'Support the bot, contact [    ]#3780'})
             await interaction.editReply({embeds:[test], components:[userbutton,enemybutton], files:[attachment]});           
@@ -204,6 +203,7 @@ console.log(team)
         let talentactivationuser = []
         let crit = [12,32,97,47,37]
         let evas = [1,5,95,45,27,]
+        let firstimeactivate = false
         
         for (let c = 0;c<=userbutton.components.length-2;c++){
             usermodhp[`${userbutton.components[c].customId}`] = team[c].hp}
@@ -250,6 +250,8 @@ console.log(team)
                 userbutton.components[f].setDisabled(true)}
             for (let f = 0;f<=enemybutton.components.length-1;f++){
                 enemybutton.components[f].setDisabled(true)}
+            
+            //ELEMENTAL DAMAGE
             let iuy = number()
             if (crit.includes(iuy)){ critical = 2}
             else if (evas.includes(iuy)){evasion = 0}
@@ -258,16 +260,15 @@ console.log(team)
 
             let talentkilled
             //TALENT ACTIVATION
-                let ra
                 let teamposition
-                teamdata.forEach(element => {if(cardattack.uniqueID==element.card_unique_id)
-                    {ra = element.card_rarity
-                    teamposition = element.team_status}});
-                    let talenteffect =talent(cardattack,ra,p,usermodhp,enemymodhp,
-                        cardattackedID,cardattacked,usercarddead,talentactivationuser,teamposition,
-                        userattackedid,userattackedcard,enemybutton,userbutton,manavaluser )
+
+                    let talenteffect =talent(cardattack,p,usermodhp,enemymodhp,
+                        cardattackedID,cardattacked,usercarddead,talentactivationuser,userattackedid,
+                        userattackedcard,enemybutton,userbutton,enemydead,manavaluser,
+                        enemy,team,firstimeactivate)
                     if (talenteffect[0].length>0){
                         test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${talenteffect[0]}`}
+                        talenteffect[0]=''
                     if (talenteffect[1]!=0){test.fields[talenteffect[1]]=talenteffect[2]}
                     await i.update({embeds:[test],components:[userbutton,enemybutton]})
                     abilityactivate = true      
@@ -277,9 +278,7 @@ console.log(team)
 
             //DAMAGE FORMULA FOR USERS
             carddamage = Math.floor((cardattack.attack-cardattacked.defense)+(cardattack.agility - cardattacked.agility)+(elementalDamage*cardattack.attack))*critical*evasion
-            console.log(cardattack,cardattacked)
-            console.log(carddamage)
-            surge(cardattack,ra,carddamage,usermodhp)
+            surge(cardattack,cardattack.rarity,carddamage,usermodhp)
 
             enemymodhp[`${cardattackedID}`] = enemymodhp[`${cardattackedID}`]-carddamage
     
