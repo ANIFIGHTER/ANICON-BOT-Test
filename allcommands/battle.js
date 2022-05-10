@@ -91,7 +91,7 @@ const ping = {
                             for (let v = 0;v<=teamdata.length-1;v++){
                                 if (team[b].uniqueID==teamdata[v].card_unique_id&&b==v)
                                 {team[b].rarity = teamdata[v].card_rarity
-                                    team[b].hp = Math.floor(team[b].hp + (0.02*teamdata[v].card_lvl*team[b].hp)+(team[b].hp*0.2*teamdata[v].card_rarity))
+                                team[b].hp = Math.floor(team[b].hp + (team[b].hp*0.2*teamdata[v].card_rarity)+(team[b].hp*0.02*teamdata[v].card_lvl))
                                 team[b].attack = Math.floor(team[b].attack + (team[b].attack*0.2*teamdata[v].card_rarity) + (team[b].attack*0.02*teamdata[v].card_lvl))
                                 team[b].defense = Math.floor(team[b].defense + (team[b].defense*0.2*teamdata[v].card_rarity) + (team[b].defense*0.02*teamdata[v].card_lvl))
                                 team[b].agility = Math.floor(team[b].agility + (team[b].agility*0.2*teamdata[v].card_rarity) + (team[b].agility*0.02*teamdata[v].card_lvl)) 
@@ -108,10 +108,11 @@ const ping = {
             for (let b = 0; b<=enemy.length-1;b++){
                     for (let v = 0;v<=enemies.length-1;v++){
                         if(enemy[b].uniqueID==enemies[v].enemy_unique_id){
-                    enemy[b].hp = Math.floor(2*enemy[b].hp + enemies[v].enemy_lvl*0.02*enemy[b].hp)
-                    enemy[b].attack = Math.floor(1.2*enemy[b].attack + enemies[v].enemy_lvl*0.02*enemy[b].attack)
-                    enemy[b].defense = Math.floor(1.6*enemy[b].defense + enemies[v].enemy_lvl*0.02*enemy[b].defense)
-                    enemy[b].agility = Math.floor(1.5*enemy[b].agility + enemies[v].enemy_lvl*0.02*enemy[b].agility)
+                            enemy[b].rarity = enemies[v].rarity
+                    enemy[b].hp = Math.floor(enemy[b].hp + enemies[v].enemy_lvl*0.02*enemy[b].hp+enemies[v].rarity*0.2*enemy[b].hp)
+                    enemy[b].attack = Math.floor(enemy[b].attack + enemies[v].enemy_lvl*0.02*enemy[b].attack+enemies[v].rarity*0.2*enemy[b].attack)
+                    enemy[b].defense = Math.floor(enemy[b].defense + enemies[v].enemy_lvl*0.02*enemy[b].defense+enemies[v].rarity*0.2*enemy[b].defense)
+                    enemy[b].agility = Math.floor(enemy[b].agility + enemies[v].enemy_lvl*0.02*enemy[b].agility+enemies[v].rarity*0.2*enemy[b].agility)
                         }}} 
 
             let manavaluser = 0
@@ -190,10 +191,8 @@ const ping = {
         let cardattack
         let enemymodhp = new Object()
         let carddamage
-        let cardattackedID
         let enemydamage = 0
         let userattackedcard
-        let userattackedid
         let enemyattack
         let usercarddead = []
         let usermodhp = new Object()
@@ -203,7 +202,17 @@ const ping = {
         let talentactivationuser = []
         let crit = [12,32,97,47,37]
         let evas = [1,5,95,45,27,]
-        let firstimeactivate = false
+
+        async function endgame (){
+            if (usertabledata[0].max_stage<usertabledata[0].leveluniqueid){
+            await dbQuery(`update userdata set max_stage = ${usertabledata[0].leveluniqueid} where user_id = ${user_id}`)
+            let useritem = await dbQuery(`Select * from useritems where user_id = ${user_id}`)
+        await dbQuery(`update useritems set gold = ${useritem[0].gold+50} where user_id = ${user_id}`)}
+        // else {}
+            if(staminadataexe[0].user_xp < staminadataexe[0].user_xp_limit){
+                await dbQuery(`update userstamina set user_xp = ${parseInt(staminadataexe[0].user_xp)+1} where user_id = ${user_id}`)}
+            
+                collector.stop()}
         
         for (let c = 0;c<=userbutton.components.length-2;c++){
             usermodhp[`${userbutton.components[c].customId}`] = team[c].hp}
@@ -224,8 +233,8 @@ const ping = {
                     if(enemybutton.components[j].customId==i.customId && enemybutton.components[j].label == enemy[kbc].character){
 
                 cardattacked= enemy[kbc]
-                cardattackedoghp = enemy[kbc].hp
-                cardattackedID = i.customId                            }}}
+                cardattacked.button_id = i.customId
+                cardattackedoghp = enemy[kbc].hp         }}}
 
                 for (let abi =0;abi<=enemybutton.components.length-1;abi++){
                     enemybutton.components[abi].setDisabled(true)}
@@ -251,71 +260,76 @@ const ping = {
             for (let f = 0;f<=enemybutton.components.length-1;f++){
                 enemybutton.components[f].setDisabled(true)}
             
-            //ELEMENTAL DAMAGE
+            //ELEMENTAL DAMAGE/CRIT/EVASION OF ENEMY
             let iuy = number()
             if (crit.includes(iuy)){ critical = 2}
             else if (evas.includes(iuy)){evasion = 0}
             let elementalDamage = elements(cardattack.element,cardattacked.element)
             if (elementalDamage==undefined){elementalDamage=0}            
 
-            let talentkilled
+            
             //TALENT ACTIVATION
                 let teamposition
 
                     let talenteffect =talent(cardattack,p,usermodhp,enemymodhp,
-                        cardattackedID,cardattacked,usercarddead,talentactivationuser,userattackedid,
-                        userattackedcard,enemybutton,userbutton,enemydead,manavaluser,
-                        enemy,team,firstimeactivate)
+                        cardattacked,usercarddead,talentactivationuser,
+                        enemybutton,userbutton,enemydead,manavaluser)
                     if (talenteffect[0].length>0){
                         test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${talenteffect[0]}`}
-                        talenteffect[0]=''
+                        if (talenteffect[3]!=undefined){
+                        manavaluser = talenteffect[3]
+                        test.fields[team.length]={name:'Mana',value:`mana${manabar(talenteffect[3])}`}}
                     if (talenteffect[1]!=0){test.fields[talenteffect[1]]=talenteffect[2]}
                     await i.update({embeds:[test],components:[userbutton,enemybutton]})
                     abilityactivate = true      
                     await wait(3000)}
-                if (talenteffect[3] == true){
-                manavaluser = manavalue(manavaluser,p,evasion,critical)}
-
+                    
+                manavaluser = manavalue(manavaluser,p,evasion,critical)
+                
+            // surge(cardattack,cardattack.rarity,carddamage,usermodhp)
+            let talentkilled = false
+            //ABILITY KILL
+            if (enemymodhp[`${cardattacked.button_id}`] <=0){
+            talentkilled = true
+                if (enemydead.length == enemybutton.components.length){
+                    test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${talenteffect[0]}\nALL ENEMIES DEAD. YOU WIN!!`}
+                endgame()
+                await i.editReply({embeds:[test],components:[]})
+                return
+                }
+            }          
             //DAMAGE FORMULA FOR USERS
             carddamage = Math.floor((cardattack.attack-cardattacked.defense)+(cardattack.agility - cardattacked.agility)+(elementalDamage*cardattack.attack))*critical*evasion
-            surge(cardattack,cardattack.rarity,carddamage,usermodhp)
+            
+            enemymodhp[`${cardattacked.button_id}`] = enemymodhp[`${cardattacked.button_id}`]-carddamage
+            if (enemymodhp[`${cardattacked.button_id}`]<=0){
+                enemymodhp[`${cardattacked.button_id}`]=0}
 
-            enemymodhp[`${cardattackedID}`] = enemymodhp[`${cardattackedID}`]-carddamage
-    
             //IF ENEMY HP LESS THAN ZERO
-            if (enemymodhp[`${cardattackedID}`] <=0){
-                enemydead.push(cardattackedID)
+            if (enemymodhp[`${cardattacked.button_id}`]<=0 && talentkilled == false ){
+                enemydead.push(cardattacked.button_id)
                 for (let x = 0; x<=enemybutton.components.length-1;x++){
-                    if (cardattackedID === enemybutton.components[x].customId){
+                    if (cardattacked.button_id === enemybutton.components[x].customId){
                         test.fields[team.length+1+x]={name:`${cardattacked.character} ${cardattacked.element}`,value :`0/${cardattackedoghp} ${enemyhp(0,cardattackedoghp)}`}}}
                         test.fields[team.length]={name:'Mana',value:`mana${manabar(manavaluser)}`}
                         if (enemydead.length != enemybutton.components.length){
                         if (critical == 2){critical = 1
                             test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did critical ${carddamage} damage\n${cardattacked.character} is defeated`}}
                         else{test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did ${carddamage} damage\n${cardattacked.character} is defeated`}}
-                        if (abilityactivate == true){await i.editReply({embeds:[test],components:[userbutton,enemybutton]})}
+                        if (abilityactivate == true&&enemydead.length != enemybutton.components.length){await i.editReply({embeds:[test],components:[userbutton,enemybutton]})}
                                         else{await i.update({embeds:[test],components:[userbutton,enemybutton]})}
                         }else if (enemydead.length == enemybutton.components.length){
                             if (critical == 2){ critical = 1
                                 test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did critical ${carddamage} damage\n${cardattacked.character} is defeated\nALL ENEMIES DEAD. YOU WIN!!`}}
                             else{    
                             test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did ${carddamage} damage\n${cardattacked.character} is defeated\nALL ENEMIES DEAD. YOU WIN!!`}}
-                        
-                            if (usertabledata[0].max_stage<usertabledata[0].leveluniqueid){
-                            await dbQuery(`update userdata set max_stage = ${usertabledata[0].leveluniqueid} where user_id = ${user_id}`)
-                            let useritem = await dbQuery(`Select * from useritems where user_id = ${user_id}`)
-                        await dbQuery(`update useritems set gold = ${useritem[0].gold+50} where user_id = ${user_id}`)}
-                        // else {}
-                            if(staminadataexe[0].user_xp < staminadataexe[0].user_xp_limit){
-                                await dbQuery(`update userstamina set user_xp = ${parseInt(staminadataexe[0].user_xp)+1} where user_id = ${user_id}`)}
-                            
-                                collector.stop()
+                        endgame()
                                 if (abilityactivate == true){await i.editReply({embeds:[test],components:[]})}
                                         else{await i.update({embeds:[test],components:[]})}
                                     return }}
                             
                             //IF ENEMY HP MORE THAN ZERO
-                            if(enemymodhp[`${cardattackedID}`]>0){
+                            if(enemymodhp[`${cardattacked.button_id}`]>0){
                                 test.fields[team.length]={name:'Mana',value:`mana ${manabar(manavaluser)}`}
                                 if(critical==2){critical=1
                                     test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did critical ${carddamage} damage`}}
@@ -324,8 +338,8 @@ const ping = {
                                 else{
                                     test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${i.component.label} attacked ${cardattacked.character} and did ${carddamage} damage`}}    
                                 for (let x = 0; x<=enemybutton.components.length-1;x++){
-                                    if (cardattackedID === enemybutton.components[x].customId){
-                                    test.fields[team.length+1+x]= {name:`${cardattacked.character} ${cardattacked.element}`,value :`${enemymodhp[`${cardattackedID}`]}/${cardattackedoghp} ${enemyhp(enemymodhp[`${cardattackedID}`],cardattackedoghp)}`}}}
+                                    if (cardattacked.button_id === enemybutton.components[x].customId){
+                                    test.fields[team.length+1+x]= {name:`${cardattacked.character} ${cardattacked.element}`,value :`${enemymodhp[`${cardattacked.button_id}`]}/${cardattackedoghp} ${enemyhp(enemymodhp[`${cardattacked.button_id}`],cardattackedoghp)}`}}}
                                 
                                 if (abilityactivate == true){await i.editReply({embeds:[test],components:[userbutton,enemybutton]})
                                 }else{await i.update({embeds:[test],components:[userbutton,enemybutton]})}}    
@@ -355,36 +369,38 @@ const ping = {
                     if (livingcard.length==1){lk=47}            
                     else{ lk = number()}
                     //Selecting random usercard
-                    if (lk>50){
+                    if (lk>70){
                             let userattackedtemp = livingcard[Math.floor(Math.random()*livingcard.length)]
                         
                             for(let m = 0;m<=team.length-1;m++){
                             if (userattackedtemp.label==team[m].character){
-                                userattackedid = userattackedtemp.customId
-                                userattackedcard = team[m]}}
+                                userattackedcard = team[m]
+                                userattackedcard.button_id = userattackedtemp.customId }}
                             livingcard=[]}
                     //Selecting first character of team            
-                    else if(lk<=50){
+                    else if(lk<=70){
                         for (let d = 0;d<=team.length-1;d++){
                             if (team[d].character == livingcard[0].label){userattackedcard = team[d]
-                                userattackedid = livingcard[0].customId
+                                userattackedcard.button_id = livingcard[0].customId
                             }}livingcard=[]}
                 
-                    //Damage formula for enemy
+                    //crit evasion of user and elemental damage to user
                     let yui = number()    
                     if (evas.includes(yui)){ 
                         evasion = 0}
                     if (crit.includes(yui)){
                         critical = 2}
-                enemydamage = Math.floor(((enemyattack.attack*1.5)-userattackedcard.defense-(enemyattack.agility - userattackedcard.agility))*critical*evasion)
-                    // const elementalDamage = elements(enemyattack.element,userattackedcard.element)
-                    // if (elementalDamage==true){enemydamage= enemydamage+Math.floor(enemydamage/4)}
-                    // else if (elementalDamage==false){enemydamage= enemydamage-Math.floor(enemydamage/4)}
-                    // else if(elementalDamage==1){enemydamage= enemydamage-Math.floor(enemydamage/10)}
-                    // else{enemydamage = enemydamage+0}
-                usermodhp[`${userattackedid}`] = (usermodhp[`${userattackedid}`]-enemydamage)
-                await wait(3000)
+                        let enemyelementalDamage = elements(enemyattack.element,userattackedcard.element)
+                        if (enemyelementalDamage==undefined){enemyelementalDamage=0}
                 
+                //Damage formula for enemy
+                enemydamage = Math.floor(((enemyattack.attack*1.5)-userattackedcard.defense-(enemyattack.agility - userattackedcard.agility))+(enemyelementalDamage*enemyattack.attack)*critical*evasion)
+            
+                usermodhp[`${userattackedcard.button_id}`] = (usermodhp[`${userattackedcard.button_id}`]-enemydamage)
+                await wait(3000)
+                let enemytalenteffect =talent(enemyattack,p,enemymodhp,usermodhp,
+                    userattackedcard,enemydead,talentactivationuser,
+                    userbutton,enemybutton,usercarddead,manavalenemy)
                 if (manavalenemy >4){
                     manavalenemy = manavalenemy - 5
                 test.fields[team.length+enemybutton.components.length+1]={name:'Mana',value:`mana ${manabar(manavalenemy)}`}
@@ -396,10 +412,10 @@ const ping = {
                 manavalenemy = manavalue(manavalenemy,p,evasion,critical)}
                 test.fields[team.length+enemybutton.components.length+1]={name:'Mana',value:`mana ${manabar(manavalenemy)}`}
                 
-                if (usermodhp[`${userattackedid}`]<=0){ 
+                if (usermodhp[`${userattackedcard.button_id}`]<=0){ 
                         for (let x = 0; x<=userbutton.components.length-1;x++){
-                            if (userattackedid==userbutton.components[x].customId){
-                                usercarddead.push(userattackedid)
+                            if (userattackedcard.button_id==userbutton.components[x].customId){
+                                usercarddead.push(userattackedcard.button_id)
                                 test.fields[x]={name:`${userattackedcard.character} ${userattackedcard.element}` ,value :`0/${userattackedcard.hp} ${enemyhp(0,userattackedcard.hp)}`}}}
                                 if (usercarddead.length!=userbutton.components.length-1){
                                 if (critical==2){
@@ -416,10 +432,10 @@ const ping = {
                                        return
                                     }}
 
-                if (usermodhp[`${userattackedid}`]>0){
+                if (usermodhp[`${userattackedcard.button_id}`]>0){
                     for (let x = 0; x<=userbutton.components.length-1;x++){
-                        if (userattackedid==userbutton.components[x].customId){
-                            test.fields[x]={name:`${userattackedcard.character} ${userattackedcard.element}` ,value :`${usermodhp[`${userattackedid}`]}/${userattackedcard.hp} ${enemyhp(usermodhp[`${userattackedid}`],userattackedcard.hp)}`}}}
+                        if (userattackedcard.button_id==userbutton.components[x].customId){
+                            test.fields[x]={name:`${userattackedcard.character} ${userattackedcard.element}` ,value :`${usermodhp[`${userattackedcard.button_id}`]}/${userattackedcard.hp} ${enemyhp(usermodhp[`${userattackedcard.button_id}`],userattackedcard.hp)}`}}}
                     if (critical==2){
                         test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} attacked ${userattackedcard.character} and did ${enemydamage} **CRITICAL DAMAGE!**.`}}
                     else if (evasion==0){
@@ -433,7 +449,7 @@ const ping = {
                 cardused.forEach(element=>{roundchange.add(element)})
                 usercarddead.forEach(element=>{roundchange.add(element)})
                 if (roundchange.size==userbutton.components.length-1){
-                    let taleffect = talfect(talentactivationuser,userbutton,team,p,usermodhp,enemymodhp,cardattackedID
+                    let taleffect = talfect(talentactivationuser,userbutton,team,p,usermodhp,enemymodhp
                         ,cardattacked,usercarddead,enemydead)
                     if (taleffect[0].length>1){
                         await wait(3000)
