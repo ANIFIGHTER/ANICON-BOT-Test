@@ -1,14 +1,13 @@
 //TALENTS
 import { All_Cards as cardss,enemyhp} from '/ASHWIN/JavaScript/disc_cards.js';
-//return key = [battle detail,[hpposition],[hp],manachange]
-let km
-function talent(a,p,usermodhp,enemymodhp,cardattackedID
-    ,cardattacked,usercarddead,talentactivationuser,userattackedid,
-    userattackedcard,enemybutton,userbutton,enemydead,manaval,enemy,team,firstimeactivate){
+//return key = [battle detail,[hpposition],[hp]]
+
+function talent(a,p,usermodhp,enemymodhp,cardattacked,usercarddead,
+    talentactivationuser,enemybutton,userbutton,enemydead,manaval){
     let line = ''
     let hpposition = 0
     let hpreturn = 0
-    let manachange = false
+
 if (a.talent_id == 1){        
 //overload
 if (!talentactivationuser.includes(a.button_id)){
@@ -24,42 +23,30 @@ if (!talentactivationuser.includes(a.button_id)){
         }
 //elemental attack
 if (a.talent_id == 2){
-    manachange = true
-    let hp
-    let button
-    let cardidenti
     if (manaval>4){
-        manaval = manaval-5
-    if(['card1','card2','card3','card4'].includes(a.button_id)){
-        hp = enemymodhp
-        cardidenti = cardattackedID
-    button = [enemybutton,userbutton.components.length]}
-    else {hp = usermodhp
-        cardidenti = userattackedid
-    button=[userbutton,0]
-cardattacked = userattackedcard}
+        manaval = manaval-5   
     let rare = ['',,10,15,20,25]
     let edb
     rare.forEach(element => {
         if (a.rarity == rare.indexOf(element))
         {edb = element}})
-        hp[`${cardidenti}`]=hp[`${cardidenti}`]- (Math.floor((edb/100)*a.attack))
-        for (let x =0;x<=button[0].components.length-1;x++){
-            if (button[0].components[x].customId==cardidenti){
-            hpposition = button[1]+x}
-            hpreturn = {name:`${cardattacked.character} ${cardattacked.element}`,value :`${hp[`${cardidenti}`]}/${cardattacked.hp} ${enemyhp(hp[`${cardidenti}`],cardattacked.hp)}`}}
-    if (hp[`${cardidenti}`]<=0){
-        hp[`${cardidenti}`]=0
-        if (hp == usermodhp){
-            usercarddead.push(a.team_id)}else{enemydead.push(a.team_id)}
-    line = line + `${a.character} uses ${a.talentname} and does ${Math.floor((edb/100)*a.attack)} damage.
+        enemymodhp[`${cardattacked.button_id}`]=enemymodhp[`${cardattacked.button_id}`]- (Math.floor((edb/100)*a.attack))
+        for (let x =0;x<=enemybutton.components.length-1;x++){
+            if (enemybutton.components[x].customId==cardattacked.button_id){
+            hpposition = userbutton.components.length+x}}
+            hpreturn = {name:`${cardattacked.character} ${cardattacked.element}`,value :`${enemymodhp[`${cardattacked.button_id}`]}/${cardattacked.hp} ${enemyhp(enemymodhp[`${cardattacked.button_id}`],cardattacked.hp)}`}
+    if (enemymodhp[`${cardattacked.button_id}`]<=0){
+        enemymodhp[`${cardattacked.button_id}`]=0
+        hpreturn = {name:`${cardattacked.character} ${cardattacked.element}`,value :`${enemymodhp[`${cardattacked.button_id}`]}/${cardattacked.hp} ${enemyhp(enemymodhp[`${cardattacked.button_id}`],cardattacked.hp)}`}
+        enemydead.push(cardattacked.button_id)
+    line = line + `${a.character} uses elemental drive and dealt ${Math.floor((edb/100)*a.attack)} damage.
     ${cardattacked.character} is defeated.`}
-    else {line = line + `${a.character} uses ${a.talentname} and does ${Math.floor((edb/100)*a.attack)} damage.`}
+    else {line = line + `${a.character} uses elemental drive and dealt ${Math.floor((edb/100)*a.attack)} damage.`}
     }}
 if (a.talent_id==3){
-    if(['card1','card2','card3','card4'].includes(a.button_id)){
-        hp = usermodhp}else{hp = enemymodhp}
-    if ((hp[`${a.button_id}`]/a.hp)*100>50){}
+    if ((usermodhp[`${a.button_id}`]/a.hp)*100>50){
+
+    }
         
 }
 // if (firstimeactivate==false){
@@ -68,11 +55,11 @@ if (a.talent_id==3){
 // for (let x = 0;x<team.length;x++){
 //     if (team[x].talent_id==4){line = line + `${team[x].character} uses **Fighting Sprit** and increases their defense by 20%. `}}
     // }
-return [line,hpposition,hpreturn,manachange]
+return [line,hpposition,hpreturn,manaval]
 }
 
 function talenteffect(talentactivationuser,userbutton,team,p,usermodhp,enemymodhp,
-    cardattackedID,cardattacked,usercarddead,enemydead){
+    cardattacked,usercarddead,enemydead){
         let cards = []
         let line = ''
         let hp
@@ -110,6 +97,12 @@ if (a.talent_id == 1){
 })
 return [line,hpposition,hpreturn]}
 
-function surge(){}
+function surge(attackingcard,damage,hp,position){
+    if ((hp[`${attackingcard.button_id}`]/attackingcard.hp)*100<50){
+        hp[`${attackingcard.button_id}`]=hp[`${attackingcard.button_id}`]+0.8*damage 
+    }positioning = position+attackingcard.button_id.split('')[attackingcard.button_id.split('').length-1]-1
+    value = {name:`${attackingcard.character} ${attackingcard.element}`,value :`${hp[`${attackingcard.button_id}`]}/${attackingcard.hp} ${enemyhp(hp[`${attackingcard.button_id}`],attackingcard.hp)}`}
+    return [positioning,value]
+}
 
 export{talent,talenteffect,surge}
