@@ -1,5 +1,5 @@
 //TALENTS
-import { All_Cards as cardss,enemyhp} from '/ASHWIN/JavaScript/disc_cards.js';
+import { All_Cards as cardss,enemyhp,elements} from '/ASHWIN/JavaScript/disc_cards.js';
 //return key = [battle detail,[hpposition],[hp]]
 
 function talent(a,p,usermodhp,enemymodhp,cardattacked,usercarddead,
@@ -30,7 +30,8 @@ if (a.talent_id == 2){
     rare.forEach(element => {
         if (a.rarity == rare.indexOf(element))
         {edb = element}})
-        enemymodhp[`${cardattacked.button_id}`]=enemymodhp[`${cardattacked.button_id}`]- (Math.floor((edb/100)*a.attack))
+        elements()
+        enemymodhp[`${cardattacked.button_id}`]=enemymodhp[`${cardattacked.button_id}`]- (Math.floor((edb/100)*a.attack)+((elements(a.element,cardattacked.element)/5)*a.attack))
         for (let x =0;x<=enemybutton.components.length-1;x++){
             if (enemybutton.components[x].customId==cardattacked.button_id){
             hpposition = userbutton.components.length+x}}
