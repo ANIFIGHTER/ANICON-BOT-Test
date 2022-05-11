@@ -74,9 +74,9 @@ const ping = {
             else {    
         let uniqueidfetch = await dbQuery(`Select * from stages where location = ${currentlocid} and area = ${currentareaid} and stage = ${stage_id}`)
     if(uniqueidfetch.length==0){await interaction.reply(`This stage does not exist.`)}
-    else if (uniqueidfetch[0].leveluniqueid>usermaxstage){
+    else if (uniqueidfetch[0].leveluniqueid>usermaxstage&&uniqueidfetch[0].leveluniqueid-usermaxstage>1){
         await interaction.reply('You have to clear previous stage')}
-    else if (uniqueidfetch[0].leveluniqueid<=usermaxstage){
+    else if (uniqueidfetch[0].leveluniqueid-1<=usermaxstage){
         await dbQuery(`update userdata set stage = ${stage_id}, leveluniqueid=${uniqueidfetch[0].leveluniqueid} where user_id=${user_id}`)
         let enemy = []
         for(let x = 0; x <= uniqueidfetch.length-1;x++){

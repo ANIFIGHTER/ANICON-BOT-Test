@@ -99,7 +99,7 @@ const Emiya_Shirou = new One_Star('Fate/stay night: Unlimited Blade Works','<:fi
 
 const Megumin = new One_Star('Kono Subarashii Sekai ni Shukufuku wo!','<:fire:916337311397052416>',19,':star:','Megumin',75,92,80,80,'EXPLOSION!!!','https://cdn.discordapp.com/attachments/897181776982720563/950307662715822110/1447e981-1951-4b6e-a7a2-4ec2daa78208.jpg','EXPLOSION !!',1,'passive')
 
-const Temple_Demon = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',701,':star:','Temple Demon',100,75,75,75,'','https://cdn.discordapp.com/attachments/897181776982720563/910719423197900800/Temple_Demon.jpg','',1,'')
+const Temple_Demon = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',701,':star:','Temple Demon',100,75,75,75,'','https://cdn.discordapp.com/attachments/897181776982720563/910719423197900800/Temple_Demon.jpg','',3,'')
 const Sakonji_Urokodaki = new One_Star('Kimetsu No Yaiba',':sparkles:',702,':star:','Sakonji Urokodaki',80,75,74,74,'','https://cdn.discordapp.com/attachments/897181776982720563/910560913474584636/Urokodaki_-_Kimetsu_no_Yaiba_by_A2T-will-Draw_on_DeviantArt.jpg')
 const Hand_Demon = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',703,':star:','Hand Demon',81,83,88,72,'','https://cdn.discordapp.com/attachments/901751803824205865/910557155457900564/Hand_Demon_about_to_kill_Sabito.png','',3,'')
 const Swamp_Demon = new One_Star('Kimetsu No Yaiba','<:earth:910194644648861776>',704,':star:','Swamp Demon',76,88,80,90,'','https://cdn.discordapp.com/attachments/897181776982720563/910915537121443860/images.jpg','',3,'')
@@ -111,7 +111,9 @@ const rui = new One_Star('Kimetsu No Yaiba','<:dark:910723272495222794>',708,':s
 const All_Cards = [Kurisu_Makise,All_Might,Kamado_Tanjiro,Kyoujuro_Rengoku,Uchiha_Sasuke,Uchiha_Itachi,Midoriya_Izuku,Asta,
 Son_Goku,Vegeta,Kamado_Nezuko,Zenitsu_Agatsuma,Tomioka_Giyuu,Hashibira_Inosuke,Kocho_Shinobu,Tsuyuri_Kanao,Satoru_Gojo,Emiya_Shirou,
 Megumin]
-const enemy = [Temple_Demon,Hand_Demon,Sakonji_Urokodaki,Swamp_Demon,susamaru,yahaba,kyogai,rui]
+const enemy = [Temple_Demon,Hand_Demon,Sakonji_Urokodaki,Swamp_Demon,susamaru,yahaba,kyogai,rui,Kurisu_Makise,All_Might,Kamado_Tanjiro,Kyoujuro_Rengoku,Uchiha_Sasuke,Uchiha_Itachi,Midoriya_Izuku,Asta,
+  Son_Goku,Vegeta,Kamado_Nezuko,Zenitsu_Agatsuma,Tomioka_Giyuu,Hashibira_Inosuke,Kocho_Shinobu,Tsuyuri_Kanao,Satoru_Gojo,Emiya_Shirou,
+  Megumin]
 // console.log(All_Cards.length)
 
 var waaa = ['Kamado Tanjiro', 'Kurisu Makise'];

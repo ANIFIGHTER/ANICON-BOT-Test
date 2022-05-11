@@ -30,7 +30,7 @@ if (a.talent_id == 2){
     rare.forEach(element => {
         if (a.rarity == rare.indexOf(element))
         {edb = element}})
-        elements()
+
         enemymodhp[`${cardattacked.button_id}`]=enemymodhp[`${cardattacked.button_id}`]- (Math.floor((edb/100)*a.attack)+((elements(a.element,cardattacked.element)/5)*a.attack))
         for (let x =0;x<=enemybutton.components.length-1;x++){
             if (enemybutton.components[x].customId==cardattacked.button_id){
@@ -100,10 +100,19 @@ return [line,hpposition,hpreturn]}
 
 function surge(attackingcard,damage,hp,position){
     if ((hp[`${attackingcard.button_id}`]/attackingcard.hp)*100<50){
-        hp[`${attackingcard.button_id}`]=hp[`${attackingcard.button_id}`]+0.8*damage 
-    }positioning = position+attackingcard.button_id.split('')[attackingcard.button_id.split('').length-1]-1
+    let rare = ['',,0.75,0.8,0.85,0.90]
+    let edb
+    rare.forEach(element => {
+        if (attackingcard.rarity == rare.indexOf(element))
+        {edb = element}})
+        hp[`${attackingcard.button_id}`]=Math.floor(hp[`${attackingcard.button_id}`]+edb*damage) 
+        if (hp[`${attackingcard.button_id}`]>=attackingcard.hp){hp[`${attackingcard.button_id}`]=attackingcard.hp}
+    let positioning
+    positioning = (position+parseInt(attackingcard.button_id.split('')[attackingcard.button_id.split('').length-1]))-1
+    console.log(positioning)
+    let value
     value = {name:`${attackingcard.character} ${attackingcard.element}`,value :`${hp[`${attackingcard.button_id}`]}/${attackingcard.hp} ${enemyhp(hp[`${attackingcard.button_id}`],attackingcard.hp)}`}
-    return [positioning,value]
+    return [positioning,value]}
 }
 
 export{talent,talenteffect,surge}

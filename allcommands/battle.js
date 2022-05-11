@@ -300,6 +300,7 @@ const ping = {
             }          
             //DAMAGE FORMULA FOR USERS
             carddamage = Math.floor((cardattack.attack-cardattacked.defense)+(cardattack.agility - cardattacked.agility)+(elementalDamage*cardattack.attack))*critical*evasion
+            if(carddamage<0){carddamage = 0} 
             
             enemymodhp[`${cardattacked.button_id}`] = enemymodhp[`${cardattacked.button_id}`]-carddamage
             if (enemymodhp[`${cardattacked.button_id}`]<=0){
@@ -393,14 +394,17 @@ const ping = {
                         let enemyelementalDamage = elements(enemyattack.element,userattackedcard.element)
                         if (enemyelementalDamage==undefined){enemyelementalDamage=0}
                 
-                //Damage formula for enemy
+            let enemytalenteffect =talent(enemyattack,p,enemymodhp,usermodhp,
+                     userattackedcard,enemydead,talentactivationuser,
+                     userbutton,enemybutton,usercarddead,manavalenemy)
+                
+                        //Damage formula for enemy
                 enemydamage = Math.floor(((enemyattack.attack*1.5)-userattackedcard.defense-(enemyattack.agility - userattackedcard.agility))+(enemyelementalDamage*enemyattack.attack)*critical*evasion)
-            
+                if (enemydamage<0){enemydamage=0}
+
                 usermodhp[`${userattackedcard.button_id}`] = (usermodhp[`${userattackedcard.button_id}`]-enemydamage)
                 await wait(3000)
-                let enemytalenteffect =talent(enemyattack,p,enemymodhp,usermodhp,
-                    userattackedcard,enemydead,talentactivationuser,
-                    userbutton,enemybutton,usercarddead,manavalenemy)
+                
                 if (manavalenemy >4){
                     manavalenemy = manavalenemy - 5
                 test.fields[team.length+enemybutton.components.length+1]={name:'Mana',value:`mana ${manabar(manavalenemy)}`}
@@ -412,6 +416,11 @@ const ping = {
                 manavalenemy = manavalue(manavalenemy,p,evasion,critical)}
                 test.fields[team.length+enemybutton.components.length+1]={name:'Mana',value:`mana ${manabar(manavalenemy)}`}
                 
+                if (enemyattack.talent_id==3){
+                    let hpregen = surge(enemyattack,enemydamage,enemymodhp,userbutton.components.length)
+                test.fields[hpregen[0]] = hpregen[1]
+                }
+
                 if (usermodhp[`${userattackedcard.button_id}`]<=0){ 
                         for (let x = 0; x<=userbutton.components.length-1;x++){
                             if (userattackedcard.button_id==userbutton.components[x].customId){
