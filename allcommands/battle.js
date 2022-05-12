@@ -156,7 +156,8 @@ const ping = {
                 .setStyle('DANGER')
             )
             const enemybutton = new discord.MessageActionRow()
-            for (let i = 0; i <= enemy.length-1;i++){   
+            for (let i = 0; i <= enemy.length-1;i++){  
+                enemy[i].button_id =  `enemy${i+1}`
                 enemybutton.addComponents(
                      new discord.MessageButton()
                     .setCustomId(`enemy${i+1}`)
@@ -165,7 +166,6 @@ const ping = {
                 )
             }
             let p = 1
-
             const test = new discord.MessageEmbed();
                 test.setTitle(`**__Challenging ${usertabledata[0].location}-${usertabledata[0].area}-${usertabledata[0].stage}__**`)
                 test.setDescription('Select your target')    
@@ -397,29 +397,29 @@ const ping = {
             let enemytalenteffect =talent(enemyattack,p,enemymodhp,usermodhp,
                      userattackedcard,enemydead,talentactivationuser,
                      userbutton,enemybutton,usercarddead,manavalenemy)
-                
+                     if (enemytalenteffect[0].length>0){
+                        test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemytalenteffect[0]}`}
+                        if (enemytalenteffect[3]!=undefined){
+                        manavalenemy = enemytalenteffect[3]
+                        test.fields[team.length+enemybutton.components.length+1]={name:'Mana',value:`mana${manabar(enemytalenteffect[3])}`}}
+                    if (enemytalenteffect[1]!=0){test.fields[enemytalenteffect[1]]=enemytalenteffect[2]}
+                    await i.editReply({embeds:[test],components:[userbutton,enemybutton]})
+                    abilityactivate = true      
+                    await wait(3000)}
+                    
+                manavalenemy = manavalue(manavalenemy,p,evasion,critical)
+                test.fields[team.length+enemybutton.components.length+1]={name:'Mana',value:`mana${manabar(manavalenemy)}`}
                         //Damage formula for enemy
                 enemydamage = Math.floor(((enemyattack.attack*1.5)-userattackedcard.defense-(enemyattack.agility - userattackedcard.agility))+(enemyelementalDamage*enemyattack.attack)*critical*evasion)
                 if (enemydamage<0){enemydamage=0}
 
                 usermodhp[`${userattackedcard.button_id}`] = (usermodhp[`${userattackedcard.button_id}`]-enemydamage)
-                await wait(3000)
-                
-                if (manavalenemy >4){
-                    manavalenemy = manavalenemy - 5
-                test.fields[team.length+enemybutton.components.length+1]={name:'Mana',value:`mana ${manabar(manavalenemy)}`}
-                test.fields[test.fields.length-1] = {name :'BATTLE DETAILS', value :`${enemyattack.character} activates their ability.`}
-                await i.editReply({embeds:[test],components:[userbutton,enemybutton]})
-                abilityactivate = true
-                await wait(3000)}
-                else{
-                manavalenemy = manavalue(manavalenemy,p,evasion,critical)}
-                test.fields[team.length+enemybutton.components.length+1]={name:'Mana',value:`mana ${manabar(manavalenemy)}`}
                 
                 if (enemyattack.talent_id==3){
-                    let hpregen = surge(enemyattack,enemydamage,enemymodhp,userbutton.components.length)
-                test.fields[hpregen[0]] = hpregen[1]
-                }
+                    let hpregen = surge(enemyattack,enemydamage,enemymodhp,userbutton.components.length,enemy,talentactivationuser)
+                for (let o = 0;o<=hpregen[0].length-1;o++){
+                    test.fields[hpregen[0][o]] = hpregen[1][o]
+                }}
 
                 if (usermodhp[`${userattackedcard.button_id}`]<=0){ 
                         for (let x = 0; x<=userbutton.components.length-1;x++){

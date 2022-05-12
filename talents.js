@@ -45,8 +45,14 @@ if (a.talent_id == 2){
     else {line = line + `${a.character} uses elemental drive and dealt ${Math.floor((edb/100)*a.attack)} damage.`}
     }}
 if (a.talent_id==3){
-    if ((usermodhp[`${a.button_id}`]/a.hp)*100>50){
-
+    if ((usermodhp[`${a.button_id}`]/a.hp)*100<50&&!talentactivationuser.includes(a.button_id)){
+        talentactivationuser.push(a.button_id)
+        let rare = ['',,75,80,85,90]
+        let edb    
+        rare.forEach(element => {
+            if (a.rarity == rare.indexOf(element))
+            {edb = element}})
+            line = line + `${a.character} uses lifesteal and restores health of whole team by ${edb}%.`
     }
         
 }
@@ -98,21 +104,27 @@ if (a.talent_id == 1){
 })
 return [line,hpposition,hpreturn]}
 
-function surge(attackingcard,damage,hp,position){
-    if ((hp[`${attackingcard.button_id}`]/attackingcard.hp)*100<50){
+function surge(attackingcard,damage,hp,position,team,talentactivationuser){
+    let positioning = []
+    let value = []
+    if ((hp[`${attackingcard.button_id}`]/attackingcard.hp)*100<50&&talentactivationuser.includes(attackingcard.button_id)){
     let rare = ['',,0.75,0.8,0.85,0.90]
-    let edb
+    let edb    
     rare.forEach(element => {
         if (attackingcard.rarity == rare.indexOf(element))
         {edb = element}})
-        hp[`${attackingcard.button_id}`]=Math.floor(hp[`${attackingcard.button_id}`]+edb*damage) 
-        if (hp[`${attackingcard.button_id}`]>=attackingcard.hp){hp[`${attackingcard.button_id}`]=attackingcard.hp}
-    let positioning
-    positioning = (position+parseInt(attackingcard.button_id.split('')[attackingcard.button_id.split('').length-1]))-1
-    console.log(positioning)
-    let value
-    value = {name:`${attackingcard.character} ${attackingcard.element}`,value :`${hp[`${attackingcard.button_id}`]}/${attackingcard.hp} ${enemyhp(hp[`${attackingcard.button_id}`],attackingcard.hp)}`}
-    return [positioning,value]}
+let hpregen = edb*damage
+        let living = []
+        for(let x = 0;x<=team.length-1;x++){if (hp[`${team[x].button_id}`]>0){living.push(team[x].button_id)}}
+        for (let y= 0;y<=living.length-1;y++){
+        hp[`${living[y]}`]=Math.floor(hp[`${living[y]}`]+(hpregen/living.length)) 
+        for(let x = 0;x<=team.length-1;x++){if (living[y]==team[x].button_id){
+        if (hp[`${living[y]}`]>=team[x].hp){hp[`${living[y]}`]=team[x].hp}
+    
+    positioning.push((position+parseInt(living[y].split('')[living[y].split('').length-1]))-1)
+    
+    value.push({name:`${team[x].character} ${team[x].element}`,value :`${hp[`${living[y]}`]}/${team[x].hp} ${enemyhp(hp[`${living[y]}`],team[x].hp)}`})
+        }}}}return [positioning,value]
 }
 
 export{talent,talenteffect,surge}
