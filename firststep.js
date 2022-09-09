@@ -1,4 +1,5 @@
-import { All_Cards as cards } from './disc_cards.js';
+// import { CommandInteractionOptionResolver } from 'discord.js';
+// import { All_Cards as cards } from './disc_cards.js'
 
 
 // let arr = [1, 2, "ghecds", "trf", 6, 45, "t4t"];
@@ -204,3 +205,15 @@ let abla = 238748724;
 // let a = new Object()
 // a[`${t.asd}`+' '+`${c}`]=852
 // t.forEach(element =>{console.log(Object.getOwnPropertyNames(element))})
+// console.log('ytbegrq1'.split('')['ytbegrq1'.split('').length-1]-1)
+// const t = ['4gre','g4re','qAaZ']
+// let cv = 'i8uytgr'
+// function test (a,b){
+//     a.push(cv)
+// return a}
+// console.log(test(t,765),t)
+
+// let exp = [{abc:'ytgrvfdv'},{abc:'tygfd'},{abc:'yytt'},{abc:'asd'},{abc:'bhjuygf'}]
+// let res = exp.sort(function(a,b){return a.abc>b.abc?1:-1})
+// console.log(res,exp)
+console.log(Math.floor(Math.random() * (400 - 200+1)) + 200)

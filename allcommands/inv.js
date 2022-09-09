@@ -1,31 +1,6 @@
 import discord from 'discord.js';
-import {SlashCommandBuilder} from '@discordjs/builders';
-import mysql from 'mysql2';
 import { All_Cards as cards} from '/ASHWIN/JavaScript/disc_cards.js';
-import dotenv from 'dotenv';
-dotenv.config();
-
-//MYSQL PASSWORD
-const possswd = process.env.SQLPASSWD;
-// console.log(possswd)
-
-// MYSQL CONNECTION
-const con = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password:`${possswd}`,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    database: 'testgame'
-  });
-  
-con.getConnection((err) => {
-if (err) {
-    return console.error('error: ' + err.message);
-}
-// console.log('Connected to the MySQL server.');
-});
+import {userid,gamedata,userdata,stamina,item} from '/Ashwin/JavaScript/models.js'
 
 function card_name(a) {
     for (let nbv = 0;nbv<=cards.length;nbv++){if (cards[nbv].uniqueID == a){return cards[nbv].character}}}
@@ -34,36 +9,41 @@ function card_element(a) {
 
 let stars = ['',':star:',':star::star:',':star::star::star:',':star::star::star::star:',':star::star::star::star::star:']
 const ping = {
-	data: new SlashCommandBuilder()
+	data: new discord.SlashCommandBuilder()
 		.setName('inventory')
-		.setDescription('View your Cards'),
+		.setDescription('View your Cards')
+        .addStringOption(option => option.setName('sort').setDescription('Sorting Options').setRequired(false)
+  .addChoices({name:'Alphabetically',value:'alphabet'},{name:'evolution',value:'evo'},{name:'cardid',value:'id'})),
     async execute(interaction){
         let id = interaction.user.id;
-        let sql = `SELECT * FROM users WHERE USER_ID = '${id}'`;
-        con.query(sql, async function vroom (err,data) {
-            if (data.length>0) {
-                let cardsininv = `SELECT * FROM gamedata WHERE card_owner = '${id}'`;
-                con.query(cardsininv, async function (err,data) {
-                if (err)  throw err;
-                const row = new discord.MessageActionRow()
+        let sortoption = interaction.options.getString('sort')
+        const fet = await userid.findOne({USER_ID:`${id}`})
+        if (fet==undefined) {
+            await interaction.reply('Register yourself first using the command /start !!!');            
+        }else{
+            let data = await gamedata.find({card_owner:id}).exec()
+            for (let v = 0;v<=data.length-1;v++){data[v].srno = v+1}
+            if (sortoption=='alphabet'){data.sort((a,b)=>card_name(a.card_unique_id)>card_name(b.card_unique_id)?1:-1)}
+            if (sortoption=='evo'){data = data.sort(function(y,x){return parseInt(x.card_rarity) - parseInt(y.card_rarity)})}
+                const row = new discord.ActionRowBuilder()
                     .addComponents( 
-                    new discord.MessageButton()
+                    new discord.ButtonBuilder()
                     .setCustomId('back')
                     .setLabel('Previous Page')
-                    .setStyle('PRIMARY')
+                    .setStyle(discord.ButtonStyle.Primary)
                     .setDisabled(true)
                 )
                     .addComponents(
-                    new discord.MessageButton()
+                    new discord.ButtonBuilder()
                     .setCustomId('deleting')
                     .setLabel('Delete')
-                    .setStyle('PRIMARY')
+                    .setStyle(discord.ButtonStyle.Danger)
                 )
                     .addComponents(
-                    new discord.MessageButton()
+                    new discord.ButtonBuilder()
                     .setCustomId('next')
                     .setLabel('Next Page')
-                    .setStyle('PRIMARY')
+                    .setStyle(discord.ButtonStyle.Primary)
                 );
                 let  noofpages;
                 let totalinvembeds = [];
@@ -71,30 +51,29 @@ const ping = {
                 if (data.length%10 === 0){noofpages = data.length/10
                 let j = 0;
                 for (let i = 1; i <= noofpages; i++){
-                    totalinvembeds[i] = new discord.MessageEmbed();
+                    totalinvembeds[i] = new discord.EmbedBuilder();
                     totalinvembeds[i].setAuthor({name:`${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`});
                     totalinvembeds[i].setTitle('**INVENTORY**');
-                    totalinvembeds[i].setColor('AQUA');
+                    totalinvembeds[i].setColor('Random');
                     totalinvembeds[i].setThumbnail('https://artfiles.alphacoders.com/114/114357.jpg')
                     totalinvembeds[i].setTimestamp()
                     totalinvembeds[i].setFooter({text:`${i} of ${noofpages}`})
                     for (;j < 10*i; j++) {
-                        totalinvembeds[i].addField(`${j+1} | **${card_name(data[j].card_unique_id)}** | ${stars[data[j].card_rarity]} | ${card_element(data[j].card_unique_id)}`, `LEVEL: ${data[j].card_lvl} |ID: ${data[j].card_id} | LIMIT BREAK: ${data[j].limitbreak}`);   
+                        totalinvembeds[i].addField({name:`${data[j].srno} | **${card_name(data[j].card_unique_id)}** | ${stars[data[j].card_rarity]} | ${card_element(data[j].card_unique_id)}`, value:`LEVEL: ${data[j].card_lvl} |ID: ${data[j].card_id} | LIMIT BREAK: ${data[j].limitbreak}`});   
                 }}
                 }else if (data.length%10 !== 0){noofpages = Math.floor(data.length/10)+1
                     let j = 0;
                     for (let i = 1; i <= noofpages; i++){
-                        totalinvembeds[i] = new discord.MessageEmbed();
+                        totalinvembeds[i] = new discord.EmbedBuilder();
                         totalinvembeds[i].setAuthor({name:`${interaction.user.tag}`, iconURL:`${interaction.user.avatarURL()}`});
                         totalinvembeds[i].setThumbnail('https://artfiles.alphacoders.com/114/114357.jpg')
                         totalinvembeds[i].setTitle('**INVENTORY**');
-                        totalinvembeds[i].setColor('AQUA');
-                        totalinvembeds[i].setDescription('')
+                        totalinvembeds[i].setColor('Random');
                         totalinvembeds[i].setTimestamp()
                         totalinvembeds[i].setFooter({text:`${i} of ${noofpages}`})
                         for (; j < 10*i; j++) {
                             if (j === data.length){break;}
-                            else {totalinvembeds[i].addField(`${j+1} | **${card_name(data[j].card_unique_id)}** | ${stars[data[j].card_rarity]} | ${card_element(data[j].card_unique_id)}`,  `LEVEL: ${data[j].card_lvl} | ID: ${data[j].card_id} | LIMIT BREAK: ${data[j].limitbreak}`);}
+                            else {totalinvembeds[i].addFields({name:`${data[j].srno} | **${card_name(data[j].card_unique_id)}** | ${stars[data[j].card_rarity]} | ${card_element(data[j].card_unique_id)}`, value:`LEVEL: ${data[j].card_lvl} | ID: ${data[j].card_id} | LIMIT BREAK: ${data[j].limitbreak}`});}
                     }}
                 }let pageno = 1;
                 if (totalinvembeds.length===2){
@@ -107,7 +86,7 @@ const ping = {
                 interaction.fetchReply()
                     .then (reply=> idofinv = reply.id)
                 const filter = i => i.user.id === interaction.user.id && idofinv === i.message.id;
-                const collector = interaction.channel.createMessageComponentCollector({filter, componentType: 'BUTTON', time: 90000 });
+                const collector = interaction.channel.createMessageComponentCollector({filter, componentType: discord.ComponentType.Button, time: 90000 });
                 collector.on('collect', async i => {
                     if(i.customId === 'next'){
                         pageno = pageno + 1;
@@ -130,10 +109,9 @@ const ping = {
                     }else if (i.customId === 'deleting'){
                         i.update({content : 'Deleted!!', components : [], embeds:[]})
                     }
-                    })    
+                        
                 })
-            }else if (data.length=== 0){await interaction.reply('Register yourself first using the command /start !!!')}
-        })          
-}}
+            }
+        }}      
 
 export {ping}

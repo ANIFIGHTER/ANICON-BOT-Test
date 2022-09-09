@@ -1,50 +1,21 @@
 import discord from 'discord.js';
-import {SlashCommandBuilder} from '@discordjs/builders';
-import mysql from 'mysql2';
+import {userid,gamedata,userdata,stamina,item} from '/Ashwin/JavaScript/models.js'
 import dotenv from 'dotenv';
 dotenv.config();
 
-//MYSQL PASSWORD
-const possswd = process.env.SQLPASSWD;
-// console.log(possswd)
-
-// MYSQL CONNECTION
-const con = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password:`${possswd}`,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    database: 'testgame'
-  });
-  
-con.getConnection((err) => {
-if (err) {
-    return console.error('error: ' + err.message);
-}
-// console.log('Connected to the MySQL server.');
-});
-const dbQuery = (query) => new Promise((resolve, reject) => {
-    con.query(query, (error, data) => {
-      if(error) reject(error);
-      else resolve(data);
-    })
-  });
-
-  const ping = {data : new SlashCommandBuilder()
+  const ping = {data : new discord.SlashCommandBuilder()
     .setName('items')
     .setDescription('View items'),
     async execute(interaction){
         let user_id = interaction.user.id
-        let sql = await dbQuery(`SELECT * FROM users WHERE USER_ID = '${user_id}'`)
+        let sql = await userid.find({USER_ID:`${user_id}`})
         if (sql.length===0){
             await interaction.reply('Not registered')
         }else{
-            const items = await dbQuery(`Select * from useritems where user_id = ${user_id}`)
-            let itemmenu = new discord.MessageActionRow()
+            const items = await item.find({user_id:user_id})
+            let itemmenu = new discord.ActionRowBuilder()
                 .addComponents(
-                    new discord.MessageSelectMenu()
+                    new discord.SelectMenuBuilder()
                     .setCustomId('itemmenu')
                     .setPlaceholder('Select the Category')
                     .addOptions([{
@@ -53,9 +24,9 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
                     },{label:'Evolution', value:'evolution'},
                     {label:'Souls',value:'souls'}])
                 )
-            let allembed = new discord.MessageEmbed()
+            let allembed = new discord.EmbedBuilder()
             allembed.setAuthor({name:`${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`})
-            allembed.setColor('RED')
+            allembed.setColor('Red')
             allembed.setTimestamp()
             allembed.setTitle('***__ALL ITEMS__***')
             allembed.setDescription(`Items owned by you`)
@@ -75,16 +46,16 @@ const dbQuery = (query) => new Promise((resolve, reject) => {
                 .then (reply=> idofitems = reply.id)
             const filter = i => i.user.id === interaction.user.id && idofitems===i.message.id 
             
-            const collector = interaction.channel.createMessageComponentCollector({filter, componentType: 'SELECT_MENU', time: 180000 });
+            const collector = interaction.channel.createMessageComponentCollector({filter, componentType: discord.ComponentType.SelectMenu, time: 180000 });
             collector.on('collect', async i => {
                 if (i.values[0] == 'all_items'){
                     await i.update({embeds :[allembed], components:[itemmenu]})}
                 else if (i.values[0] == 'evolution' ){
-                    let evo = new discord.MessageEmbed(allembed)
+                    let evo = new discord.EmbedBuilder(allembed.data)
                     evo.spliceFields(0,2)
                 await i.update({embeds :[evo], components:[itemmenu]})}
                 else if (i.values[0] == 'souls' ){
-                    let sol = new discord.MessageEmbed(allembed)
+                    let sol = new discord.EmbedBuilder(allembed.data)
                     sol.spliceFields(0,1)
                     sol.spliceFields(1,1)
                     await i.update({embeds :[sol], components:[itemmenu]})}

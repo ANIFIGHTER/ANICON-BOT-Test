@@ -1,5 +1,6 @@
-import {REST} from '@discordjs/rest';
-import {Routes} from 'discord-api-types/v9';
+import discord from 'discord.js'
+// import {REST} from '@discordjs/rest';
+// import {Routes} from 'discord-api-types/v9';
 import dotenv from 'dotenv'
 import fs from 'fs';
 dotenv.config();
@@ -19,8 +20,8 @@ for (const file of commandfiles) {
 	// console.log(commands)
 }
 
-const rest = new REST({ version: '9' }).setToken(token);
+const rest = new discord.REST({ version: '10' }).setToken(token);
 
-rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands})
+rest.put(discord.Routes.applicationGuildCommands(clientId, guildId), { body: commands})
 	.then(() => console.log('Successfully registered application commands.'))
 	.catch(console.error);

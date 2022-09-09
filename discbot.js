@@ -1,87 +1,115 @@
-import discord from 'discord.js';
-import dotenv from 'dotenv';
-import { All_Cards as cards, rarrity as randomrarity,randomcard } from './disc_cards.js';
-import fs from 'fs';
-import mysql from 'mysql2';
+import discord from "discord.js";
+import dotenv from "dotenv";
+import fs from "fs";
+import mongoose from "mongoose";
+import { All_Cards as cards, randomcard} from '/ASHWIN/JavaScript/disc_cards.js';
+import {userid,gamedata,userdata,stamina,item,stage} from '/ASHWIN/JavaScript/models.js'
+// import mysql from 'mysql2';
 dotenv.config();
 
-//MYSQL PASSWORD
-const possswd = process.env.SQLPASSWD;
-// console.log(possswd)
+// //MYSQL PASSWORD
+// const possswd = process.env.SQLPASSWD;
+// // console.log(possswd)
 
-// MYSQL CONNECTION
-const con = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password:`${possswd}`,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    database: 'testgame'
-  });
+// // MYSQL CONNECTION
+// const con = mysql.createPool({
+//     host: "localhost",
+//     user: "root",
+//     password:`${possswd}`,
+//     waitForConnections: true,
+//     connectionLimit: 10,
+//     queueLimit: 0,
+//     database: 'testgame'
+//   });
+
+// con.getConnection((err) => {
+// if (err) {
+//     return console.error('error: ' + err.message);
+// }
+// // console.log('Connected to the MySQL server.');
+// });
+
+await mongoose
+  .connect(
+    "mongodb+srv://Anicon:botkadb%40479@anicon.hshsz.mongodb.net/testgame?retryWrites=true&w=majority",
+        {useNewUrlParser: true, useUnifiedTopology: true, keepAlive: true }
+  ).then(()=>{console.log('connected')},err=>console.log(err,'yftntgbfb'))
+    
   
-con.getConnection((err) => {
-if (err) {
-    return console.error('error: ' + err.message);
-}
-// console.log('Connected to the MySQL server.');
-});
-
+//   let cardsummon = randomcard(cards)
+//   let rarity = 4
+//   let b = await gamedata.find()
+//   let a = b.sort(function(x, y){return parseInt(x.card_id) - parseInt(y.card_id)})
+//   let theyid = await userid.find() 
+// for (let x = 0;x<theyid.length;x++){
+//   await new gamedata({card_id:a[a.length-1].card_id+1,card_unique_id:cardsummon.uniqueID,card_rarity:rarity,card_lvl:20,card_owner:theyid[x].USER_ID}).save()
+// await new gamedata({card_id:1,card_unique_id:cardsummon.uniqueID,card_rarity:rarity,card_lvl:20,card_owner:'370958883239231499'}).save()
+//   }
+// await gamedata.deleteMany()
+//   for (let x = 0;x<21;x++)
+// await new stage({area:2, stage:1, enemy_unique_id: 1, enemy_lvl:1,	
+//     leveluniqueid:1, rarity: 2}).save()
+// let mop = await gamedata.find()
+// for(let b = 0;b<=mop.length-1;b++){mop[b].familarity = 0
+// await mop[b].save()}
 //CREATED CLIENT
 const client = new discord.Client({
-    intents: [discord.Intents.FLAGS.GUILD_MESSAGES,
-    discord.Intents.FLAGS.GUILDS,
-    discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    discord.Intents.FLAGS.DIRECT_MESSAGES,
-discord.Intents.FLAGS.GUILD_PRESENCES ],
-restRequestTimeout:50000    
-})
+  intents: ['Guilds'
+    // discord.Intents.FLAGS.GUILD_MESSAGES,
+    // discord.Intents.FLAGS.GUILDS,
+    // discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    // discord.Intents.FLAGS.DIRECT_MESSAGES,
+    // discord.Intents.FLAGS.GUILD_PRESENCES,
+  ],
+  restRequestTimeout: 50000,
+});
 
 // TOKEN - BOT PASSWORD
 const startpassword = process.env.TOKEN;
-process.on('unhandledRejection', error => {
-	console.error('Unhandled promise rejection:', error);
+process.on("unhandledRejection", (error) => {
+  console.error("Unhandled promise rejection:", error);
 });
-const a = '$'
+
 
 client.commands = new discord.Collection();
-const commandFiles = fs.readdirSync('./allcommands').filter(file => file.endsWith('.js'));
+const commandFiles = fs
+  .readdirSync("./allcommands")
+  .filter((file) => file.endsWith(".js"));
 
 for (const file of commandFiles) {
-	let command = await import (`./allcommands/${file}`);
-    // console.log(command)
-	client.commands.set(command.ping.data.name, command);
+  let command = await import(`./allcommands/${file}`);
+  // console.log(command)
+  client.commands.set(command.ping.data.name, command);
 }
 // console.log(client.commands)
 
 //BOT ON READY EVENT
-client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
-})
-
-
-client.on('interactionCreate', async (interaction) => {
-    if (!interaction.isCommand()) return;
-    const command = client.commands.get(interaction.commandName);
-    // console.log(command)
-    if (!command) return;
-
-	try{
-         await command.ping.execute(interaction)
-	} catch (error) {
-		console.error(error);
-		return interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-	}
-    
+client.on("ready", () => {
+  console.log(`Logged in as ${client.user.tag}!`);
 });
 
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
+  const command = client.commands.get(interaction.commandName);
+  // console.log(command)
+  if (!command) return;
 
+  try {
+    await command.ping.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    return interaction.reply({
+      content: "There was an error while executing this command!",
+      ephemeral: true,
+    });
+  }
+});
 
 // client.on('interactionCreate', async (interaction) => {
 //     if (interaction.isButton()){
 //         interaction.user
 //     }
-//  
+//
 //     if (!command) return;
 
 // 	try{
@@ -90,67 +118,7 @@ client.on('interactionCreate', async (interaction) => {
 // 		console.error(error);
 // 		return interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 // 	}
-    
+
 // });
 
-// client.on('messageCreate', async (message) => {
-//     let inst = new discord.MessageEmbed();
-//     inst.setAuthor(message.author.tag, message.author.avatarURL());
-//     inst.setColor('BLUE');
-//     inst.setTitle('**INSTRUCTIONS**')
-//     inst.setDescription('This is an embed');
-    
-//     if (message.content === `${a}jankenpun`) {        
-//         await message.channel.send({embeds:[inst]});
-//     }
-// });
-
-// client.on('messageCreate', async(message) =>{
-//     if (message.content.startsWith(`${a}info`)) {
-//         let id = message.author.id;
-//         let alluserid = [];
-//         var sql = `SELECT * FROM users`;
-//         con.query(sql, function (err, result) {
-//         if (result) { 
-//             for (let g = 0; g < result.length; g++){
-//                 alluserid.push(result[g].USER_ID)
-//                 if (alluserid.includes(id) === true) {
-//                     let cardsininv = `SELECT * FROM gamedata WHERE card_id = '${id}'`;
-//                     con.query(cardsininv, function (err,result) {
-//                     if (err)  throw err;
-//                         let data = result;
-//                         // console.log(lastindex)
-//                         let playercardids = [];
-//                         function playercardd(cardid,cardname,cardrarity) {
-//                             this.cardid = cardid;
-//                             this.carddname = cardname;
-//                             this.cardrarity 
-//                         }
-//                         let actualcard = [];
-//                         for (let i = 0; i < data.length; i++) {
-//                             let thecarddetail = new playercardd(`${data[i].card_id}`, `${data[i].card_name}`)
-//                             playercardlist.push( data[i].card_name);}
-//                             for (let j = 0; j < cards.length; j++) {
-//                                 for (let k = 0; k < playercardnamelist.length; k++){
-//                                     if (playercardnamelist[k] === cards[j].character) {
-//                                     actualcard.push(cards[j])}};
-//                                         if (playercardnamelist[k]=== data[i].card_name){
-//                                             let cardindex = i;
-//                                             let stars = ['',':star2:',':star2::star2:',':star2::star2::star2:',':star2::star2::star2::star2:',':star2::star2::star2::star2::star2:']
-//                                             let invembed = new discord.MessageEmbed();
-//                                             invembed.setAuthor(message.author.tag, message.author.avatarURL());
-//                                             invembed.setTitle('**INVENTORY**'); 
-//                                             invembed.setColor('AQUA');    
-//                                             invembed.addField(`1 | ${actualcards[0].character} element here  ${stars[data[cardindex].card_rarity]}`,'card level and id here ');
-                                        
-//                                             message.channel.send({embeds:[invembed]})
-                                            
-//                     }}
-//         })
-//                 }else{
-//                     message.channel.send('Not Registered');
-//                 }           
-//         }}});
-// }});                
-
-await client.login(startpassword)
+await client.login(startpassword);

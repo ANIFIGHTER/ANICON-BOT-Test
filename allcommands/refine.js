@@ -1,125 +1,116 @@
 import discord from 'discord.js';
-import {SlashCommandBuilder} from '@discordjs/builders';
-import { All_Cards as cards, randomcard} from '/ASHWIN/JavaScript/disc_cards.js';
-import mysql from 'mysql2';
-import dotenv from 'dotenv';
-dotenv.config();
+import { All_Cards as cards} from '/ASHWIN/JavaScript/disc_cards.js';
+import {userid,gamedata,item} from '/Ashwin/JavaScript/models.js'
 
-//MYSQL PASSWORD
-const possswd = process.env.SQLPASSWD;
-// console.log(possswd)
-
-// MYSQL CONNECTION
-const con = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password:`${possswd}`,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    database: 'testgame'
-  });
-  
-con.getConnection((err) => {
-if (err) {
-    return console.error('error: ' + err.message);
-}
-// console.log('Connected to the MySQL server.');
-});
-const dbQuery = (query) => new Promise((resolve, reject) => {
-    con.query(query, (error, data) => {
-      if(error) reject(error);
-      else resolve(data);
-    })
-  });
-
-  const ping = {data : new SlashCommandBuilder()
-    .setName('refine')
-    .setDescription('Refine your Card')
-    .addStringOption(option => option.setName('card_id').setDescription('Input ID').setRequired(true))
-    .addStringOption(option => option.setName('energy_soul_type').setDescription('Input type').setRequired(false)
-    .addChoices([['fire','<:fire:916337311397052416>'],['water','<:water:916338240179552267>'],['light','light'],
-  ['dark','<:dark:910723272495222794>'],['wind','<:wind:916336940343771156>'],['nature','<:nature:910561837492346931>'],
-['ground','<:download:910194644648861776>'],['zap',':zap:'],['neutral',':sparkles:']]))
+const ping = {data : new discord.SlashCommandBuilder()
+  .setName('refine')
+  .setDescription('Refine your Card')
+  .addStringOption(option => option.setName('card_id').setDescription('Input ID').setRequired(true))
+  .addStringOption(option => option.setName('energy_soul_type').setDescription('Input type').setRequired(false)
+  .addChoices({name:'fire',value:'<:fire:916337311397052416>'},{name:'water',value:'<:water:916338240179552267>'},
+  {name:'light',value:':sunny:'},{name:'dark',value:'<:dark:910723272495222794>'},{name:'wind',value:'<:wind:916336940343771156>'},
+  {name:'nature',value:'<:nature:910561837492346931>'},{name:'ground',value:'<:earth:910194644648861776>'},
+  {name:'zap',value:':zap:'},{name:'neutral',value:':sparkles:'}))
     .addIntegerOption(option => option.setName('energy_soul').setDescription('No. of energy souls you want to use').setRequired(false)),
     async execute(interaction){
       let card
-        let user_id = interaction.user.id
-        let energy_stone_type = interaction.options.getString('energy_soul_type')
-        let card_id = interaction.options.getString('card_id')
-        let energy_stone = interaction.options.getInteger('energy_soul')
-        let sq = `Select * from users where USER_ID = ${user_id}`
-      let sqexe = await dbQuery(sq)
+      let cardo
+      let user_id = interaction.user.id
+      let energy_stone_type = interaction.options.getString('energy_soul_type')
+      let card_id = interaction.options.getString('card_id')
+      let energy_stone = interaction.options.getInteger('energy_soul')
+      let sqexe = await userid.find({USER_ID:`${user_id}`})
       if (sqexe.length == 0){await interaction.reply('Not registered')} 
-      else{let userdataquery = `SELECT * from gamedata where card_owner = ${user_id}`
-    let userdata = await dbQuery(userdataquery)
-    for (let x = 0;x<userdata.length-1;x++){if (x == (card_id-1)){card = userdata[x]}}
-    let a = {1:20,2:40,3:60,4:80,5:100}
-    let elementquery= `Select * from useritems where user_id = ${user_id}`
-    let element_map = {'<:fire:916337311397052416>':'fire','light':'light','<:water:916338240179552267>':'water',
+      else{let data = await gamedata.find({card_owner :user_id})
+
+    for (let x = 0;x<=data.length-1;x++){
+      if (x == (card_id-1)){
+      for (let o =0;o<=cards.length-1;o++){
+        if (cards[o].uniqueID==data[x].card_unique_id){
+      card = cards[o]
+    card._id = data[x]._id
+  card.xp = data[x].card_xp
+card.rarity = data[x].card_rarity}}}}
+
+    let a = [20,40,60,80,100]
+    let element_map = {'<:fire:916337311397052416>':'fire',':sunny:':'light','<:water:916338240179552267>':'water',
     '<:dark:910723272495222794>':'dark','<:wind:916336940343771156>':'wind','<:nature:910561837492346931>':'nature',
-    '<:download:910194644648861776>':'ground',':zap:':'zap',':sparkles:':'neutral'}
-    let elementdata = await dbQuery(elementquery)
+    '<:earth:910194644648861776>':'ground',':zap:':'zap',':sparkles:':'neutral'}
+    let elementdata = await item.find({user_id :user_id})
     let element = elementdata[0]
     let type_energystone
-    if(energy_stone_type == undefined){
-      energy_stone_type= card.card_element
-    type_energystone = element_map[`${card.card_element}`]}
+    if(energy_stone_type== undefined){
+      energy_stone_type= card.element
+    type_energystone = element_map[`${card.element}`]}
     else if (energy_stone_type!=undefined){type_energystone=element_map[`${energy_stone_type}`] }
     let stone_xp
     if (energy_stone==undefined){energy_stone = element[`${type_energystone}`]}
     if(energy_stone > element[`${type_energystone}`])
     {await interaction.reply(`You own ${element[`${type_energystone}`]} ${type_energystone} soul.`)}
   else{
-    if (energy_stone_type ==  card.card_element){
-      stone_xp = energy_stone*6
-    }else if (energy_stone_type != card.card_element){
-      stone_xp = energy_stone*4}
-
-let total_xp = stone_xp+card.card_xp
-let card_class
-for (let j = 0;j<=cards.length-1;j++){if(card.card_unique_id == cards[j].uniqueID){card_class = cards[j]}}
-
-const levelembed = new discord.MessageEmbed();
+const levelembed = new discord.EmbedBuilder();
 levelembed.setAuthor({name:`${interaction.user.tag}`, iconURL:`${interaction.user.avatarURL()}`})
-levelembed.setColor('BLUE')
+levelembed.setColor('Blue')
 levelembed.setTimestamp()
 levelembed.setTitle('**__REFINING__**')
-levelembed.setThumbnail(`${card_class.artlink}`)
-levelembed.setDescription(`You are refining the following card:\n\n **CARD NAME :** ${card_class.character}
-\nYou are using following resources:\n**SOULS :** ${energy_stone} ${type_energystone} souls
-**Total xp gained =** ${stone_xp}`)
+levelembed.setThumbnail(`${card.artlink}`)
+levelembed.setDescription(`You are refining the following card:\n\n **CARD NAME :** ${card.character}
+\nYou are using following resources:\n**SOULS :** ${energy_stone} ${type_energystone} souls`)
 levelembed.setFooter({text:'Support the bot, contact [    ]#3780'})
-let confirm = new discord.MessageActionRow()
+let confirm = new discord.ActionRowBuilder()
         .addComponents(
-            new discord.MessageButton()
+            new discord.ButtonBuilder()
             .setCustomId('ok')
             .setLabel('Done')
             .setEmoji('✅')
-            .setStyle('SUCCESS')
+            .setStyle(discord.ButtonStyle.Success)
         ).addComponents(
-            new discord.MessageButton()
+            new discord.ButtonBuilder()
             .setCustomId('notok')
             .setLabel('No')
             .setEmoji('❌')
-            .setStyle('DANGER')
+            .setStyle(discord.ButtonStyle.Danger)
         )
     await interaction.reply({embeds:[levelembed], components:[confirm]})
     let idofrefine
     interaction.fetchReply()
         .then (reply=> idofrefine = reply.id)
     const filter = i => i.user.id === interaction.user.id && idofrefine===i.message.id 
-    const collector = interaction.channel.createMessageComponentCollector({filter, componentType: 'BUTTON', time: 30000 });
+    const collector = interaction.channel.createMessageComponentCollector({filter, componentType: discord.ComponentType.Button, time: 30000 });
     collector.on('collect', async i => {
       if (i.customId=='ok'){
-        let z = 0
-        for(let x =0;x<=a[card.card_rarity];x++){z = z+1.1*x
-        if(z>total_xp){
-          await dbQuery(`update gamedata set card_lvl = ${x},card_xp = ${total_xp} where card_owner = ${user_id} and card_id = ${card.card_id}`)
-          await dbQuery(`update useritems set ${type_energystone}=${element[`${type_energystone}`]-energy_stone} where user_id = ${user_id}`)
-          levelembed.setDescription(`You successfully refined your ${card_class.character} to level ${x}`)
+    if (energy_stone_type ==  card.element){
+      stone_xp = energy_stone*60}else{stone_xp = energy_stone*40}
+      let soul_used
+      let total_xp
+      let z = 0
+      let cxpup = await gamedata.find({card_owner :user_id,_id:card._id}) 
+      total_xp = stone_xp+card.xp
+      for(let x =0;x<=a[card.rarity-1];x++){z = z+12*x      
+        if (z>=total_xp){
+          cxpup[0].card_xp = total_xp
+          cxpup[0].card_lvl = x-1 
+          cxpup[0].save()
+          element[`${type_energystone}`]=element[`${type_energystone}`]-energy_stone
+          await element.save()
+          levelembed.setDescription(`You are refining the following card:\n\n **CARD NAME :** ${card.character}
+\nYou are using following resources:\n**SOULS :** ${energy_stone} ${type_energystone} souls`)
+          levelembed.addFields({name:'Result',value:`You successfully refined your ${card.character} to level ${x-1}`})
           await i.update({embeds:[levelembed],components:[]})
-        break}} 
+          break
+        }else if(z<total_xp&&x==a[card.rarity-1]){
+          soul_used = Math.floor((z-card.xp)/60)
+          cxpup[0].card_xp = Math.floor(z)
+          cxpup[0].card_lvl = x
+          cxpup[0].save()
+          element[`${type_energystone}`]=element[`${type_energystone}`]-soul_used
+          await element.save()
+          levelembed.setDescription(`You are refining the following card:\n\n **CARD NAME :** ${card.character}
+\nYou are using following resources:\n**SOULS :** ${soul_used} ${type_energystone} souls`)
+          levelembed.addFields({name:'Result',value:`You successfully refined your ${card.character} to level ${x}`})
+          await i.update({embeds:[levelembed],components:[]})
+          break
+        }}
       }if (i.customId=='notok'){
         levelembed.setDescription('Refinement was not done')
         await i.update({embeds:[levelembed],components:[]})
