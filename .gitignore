@@ -1,2 +1,11 @@
+node_modules
 .env
-node_modules/
+battle.js
+loc.js
+map.js
+firststep.js
+fix.js
+pinng.js
+quests.js
+talents.js
+teamremove.js 
