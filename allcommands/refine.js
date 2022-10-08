@@ -1,6 +1,6 @@
 import discord from 'discord.js';
-import { All_Cards as cards} from '/ASHWIN/JavaScript/disc_cards.js';
-import {userid,gamedata,item} from '/Ashwin/JavaScript/models.js'
+import { All_Cards as cards} from '/home/container/disc_cards.js';
+import {userid,gamedata,item} from '/home/container/models.js'
 
 const ping = {data : new discord.SlashCommandBuilder()
   .setName('refine')

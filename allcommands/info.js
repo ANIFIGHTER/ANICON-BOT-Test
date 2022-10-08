@@ -1,6 +1,6 @@
 import discord from 'discord.js';
-import {userid,gamedata,userdata,stamina,item} from '/Ashwin/JavaScript/models.js'
-import { All_Cards as cards,skillfunc} from '/ASHWIN/JavaScript/disc_cards.js';
+import {userid,gamedata,userdata,stamina,item} from '/home/container/models.js'
+import { All_Cards as cards,skillfunc} from '/home/container/disc_cards.js';
 
 let stars = ['',':star:',':star::star:',':star::star::star:',':star::star::star::star:',':star::star::star::star::star:']
 const ping = {

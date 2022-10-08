@@ -1,9 +1,8 @@
 import discord from 'discord.js';
-import {SlashCommandBuilder} from '@discordjs/builders';
-import {userid} from '/ASHWIN/JavaScript/models.js'
+import {userid} from '/home/container/models.js'
 
 const ping = {
-	data: new SlashCommandBuilder()
+	data: new discord.SlashCommandBuilder()
 		.setName('help')
 		.setDescription('List of commands'),
     async execute(interaction) {
@@ -11,7 +10,7 @@ const ping = {
         const fet = await userid.findOne({USER_ID:id})
             if (fet==undefined) {
                 await interaction.reply('Not Registered');
-            }else{let helpembed = new discord.MessageEmbed()
+            }else{let helpembed = new discord.EmbedBuilder()
                 helpembed.setAuthor({name:`${interaction.user.tag}`, iconURL: `${interaction.user.avatarURL()}`});
                 helpembed.setTitle('**INVENTORY**');
                 helpembed.setColor('AQUA');

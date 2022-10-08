@@ -1,6 +1,6 @@
 import discord from 'discord.js';
-import { All_Cards as cards} from '/ASHWIN/JavaScript/disc_cards.js';
-import {userid,gamedata,userdata,stamina,item} from '/Ashwin/JavaScript/models.js'
+import { All_Cards as cards} from '/home/container/disc_cards.js';
+import {userid,gamedata,userdata,stamina,item} from '/home/container/models.js'
 
 function card_name(a) {
     for (let nbv = 0;nbv<=cards.length;nbv++){if (cards[nbv].uniqueID == a){return cards[nbv].character}}}

@@ -1,8 +1,8 @@
 import discord from 'discord.js';
 import canvass from 'canvas'
-import {userid,gamedata,userdata,stamina,item,stage} from '/Ashwin/JavaScript/models.js'
-import { All_Cards as cards, enemy as enemylist,enemyhp,manabar,manavalue,elements} from '/ASHWIN/JavaScript/disc_cards.js';
-import {taleffect,talfect} from '/Ashwin/JavaScript/autotalents.js';
+import {userid,gamedata,userdata,stamina,item,stage} from '/home/container/models.js'
+import { All_Cards as cards, enemy as enemylist,enemyhp,manabar,manavalue,elements} from '/home/container/disc_cards.js';
+import {taleffect,talfect} from '/home/container/autotalents.js';
 import util from 'util'
 import dotenv from 'dotenv';
 dotenv.config();

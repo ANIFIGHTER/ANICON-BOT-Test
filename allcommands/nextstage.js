@@ -1,6 +1,6 @@
 import discord from 'discord.js';
-import { All_Cards as cards,enemy as enemylist,randomcard,skill} from '/ASHWIN/JavaScript/disc_cards.js';
-import {userid,gamedata,userdata,stamina,item,stage} from '/Ashwin/JavaScript/models.js'
+import { All_Cards as cards,enemy as enemylist,randomcard,skill} from '/home/container/disc_cards.js';
+import {userid,gamedata,userdata,stamina,item,stage} from '/home/container/models.js'
 import canvass from'canvas'
 import dotenv from 'dotenv';
 dotenv.config();

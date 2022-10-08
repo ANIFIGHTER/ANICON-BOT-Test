@@ -1,6 +1,6 @@
 import {SlashCommandBuilder} from '@discordjs/builders';
-import { All_Cards as cards,randomcard} from '/ASHWIN/JavaScript/disc_cards.js';
-import {userid,gamedata,userdata,stamina,item,dailytab} from '/ASHWIN/JavaScript/models.js'
+import { All_Cards as cards,randomcard} from '/home/container/disc_cards.js';
+import {userid,gamedata,userdata,stamina,item,dailytab} from '/home/container/models.js'
 
 const ping = {
 	data: new SlashCommandBuilder()

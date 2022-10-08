@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import {userid,gamedata,userdata,stamina,item} from '/Ashwin/JavaScript/models.js'
+import {userid,gamedata,userdata,stamina,item} from '/home/container/models.js'
 import dotenv from 'dotenv';
 dotenv.config();
 

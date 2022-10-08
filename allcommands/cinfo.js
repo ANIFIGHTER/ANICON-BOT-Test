@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import { All_Cards as cards,skillfunc} from '/ASHWIN/JavaScript/disc_cards.js';
+import { All_Cards as cards,skillfunc} from '/home/container/disc_cards.js';
 
 const ping = {
 	data: new discord.SlashCommandBuilder()

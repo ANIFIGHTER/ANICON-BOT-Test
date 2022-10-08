@@ -1,8 +1,8 @@
 import discord from 'discord.js';
 import dotenv from 'dotenv';
 dotenv.config();
-import { All_Cards as cards, enemy as enemylist,enemyhp} from '/ASHWIN/JavaScript/disc_cards.js';
-import {userid,gamedata,userdata,stamina,item,stage} from '/Ashwin/JavaScript/models.js'
+import { All_Cards as cards, enemy as enemylist,enemyhp} from '/home/container/disc_cards.js';
+import {userid,gamedata,userdata,stamina,item,stage} from '/home/container/models.js'
 
 function seriesname(a){
     for (let x = 0;x<=enemylist.length-1;x++){

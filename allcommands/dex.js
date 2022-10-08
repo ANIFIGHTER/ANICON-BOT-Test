@@ -1,6 +1,5 @@
 import discord from 'discord.js';
-// import {SlashCommandBuilder} from '@discordjs/builders';
-import { All_Cards as cards, enemy as enemylist} from '/ASHWIN/JavaScript/disc_cards.js';
+import { All_Cards as cards, enemy as enemylist} from '/home/container/disc_cards.js';
 
 let ser = []
 let bla = new Set()

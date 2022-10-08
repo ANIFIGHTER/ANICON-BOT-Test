@@ -1,4 +1,4 @@
-import { All_Cards as cardss,enemyhp,elements} from '/ASHWIN/JavaScript/disc_cards.js';
+import { All_Cards as cardss,enemyhp,elements} from '/home/container/disc_cards.js';
 
 function taleffect(cardattack,cardattacked,manavaluser,manavalenemy,hp){
     let manaval

@@ -2,8 +2,8 @@ import discord from 'discord.js';
 import dotenv from 'dotenv';
 dotenv.config();
 import canvass from 'canvas'
-import { All_Cards as cards, enemy as enemylist,enemyhp,skill} from '/ASHWIN/JavaScript/disc_cards.js';
-import {userid,gamedata,userdata,stamina,item,stage} from '/Ashwin/JavaScript/models.js'
+import { All_Cards as cards, enemy as enemylist,enemyhp,skill} from '/home/container/disc_cards.js';
+import {userid,gamedata,userdata,stamina,item,stage} from '/home/container/models.js'
 
 
 let stars = ['',':star:',':star::star:',':star::star::star:',':star::star::star::star:',':star::star::star::star::star:']

@@ -1,5 +1,5 @@
 import discord from 'discord.js';
-import {userid,gamedata,userdata,stamina,item,dailytab} from '/Ashwin/JavaScript/models.js'
+import {userid,gamedata,userdata,stamina,item,dailytab} from '/home/container/models.js'
 
 function randomlist(array) { return array[Math.floor(Math.random()*array.length)]};
 

@@ -2,8 +2,8 @@ import discord from "discord.js";
 import dotenv from "dotenv";
 import fs from "fs";
 import mongoose from "mongoose";
-import { All_Cards as cards, randomcard} from '/ASHWIN/JavaScript/disc_cards.js';
-import {userid,gamedata,userdata,stamina,item,stage} from '/ASHWIN/JavaScript/models.js'
+import { All_Cards as cards, randomcard} from '/home/container/disc_cards.js';
+import {userid,gamedata,userdata,stamina,item,stage} from '/home/container/models.js'
 // import mysql from 'mysql2';
 dotenv.config();
 

@@ -1,6 +1,6 @@
 import discord from 'discord.js';
-import {userid,gamedata,userdata,stamina,item} from '/Ashwin/JavaScript/models.js'
-import { All_Cards as cards} from '/ASHWIN/JavaScript/disc_cards.js';
+import {userid,gamedata,userdata,stamina,item} from '/home/container/models.js'
+import { All_Cards as cards} from '/home/container/disc_cards.js';
 
 
 function card_name(a) {
